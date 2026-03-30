@@ -1,5 +1,5 @@
 import { mdsvex } from 'mdsvex';
-import adapter from '@sveltejs/adapter-auto';
+import adapter from '@sveltejs/adapter-cloudflare';
 import { relative, sep, resolve } from 'node:path';
 
 /** @type {import('@sveltejs/kit').Config} */
