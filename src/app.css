@@ -546,7 +546,7 @@ footer {
   border-color: var(--fg);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
   .container { padding: 2rem 1.25rem 4rem; }
   header.site-header { margin-bottom: 4rem; }
   
@@ -598,10 +598,9 @@ footer {
   }
   
   .project-grid { grid-template-columns: 1fr; gap: 1rem; }
-  .project-card-minimal { padding: 1.25rem; text-align: left; }
-  .project-row { text-align: left; padding: 1.25rem 1rem; margin: 0; }
-  .thought-desc { text-align: left; font-size: 0.95rem; margin-bottom: 1rem; }
-  .project-row .arrow, .project-card-minimal .arrow { display: none; }
+  .project-card-minimal, .post-card { padding: 1.25rem; text-align: left; }
+  .post-desc { text-align: left; font-size: 0.95rem; margin-bottom: 1rem; }
+  .project-card-minimal .arrow, .post-card .arrow { display: none; }
   .prose { font-size: 1.15rem; padding: 0; text-align: left; }
 
   .footer-content { flex-direction: column; align-items: flex-start; gap: 2.5rem; }
