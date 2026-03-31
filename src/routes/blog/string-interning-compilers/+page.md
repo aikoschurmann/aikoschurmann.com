@@ -239,6 +239,5 @@ While this hierarchy works perfectly, other high-performance compilers sometimes
 
 ## The Result: Free Resolution
 
-By paying the **O(L)** cost exactly once in the Lexer, every string is converted into a unique pointer. From that point on, the Parser, Typechecker, and Optimizer never use `strcmp` again. String interning transforms the compiler from a slow text processor into a lean, integer-crunching machine. This optimization ensures the entire front-end pipeline feels practically instantaneous.
+Work done in the lexer results in every string being converted into a unique pointer. From that point on, the Parser, Typechecker, and Optimizer never use `strcmp` again. String interning transforms the compiler from a slow text processor into a lean, integer-crunching machine. This optimization ensures the entire front-end pipeline feels practically instantaneous.
 
-<PostEmbed id="O(1) Symbol Resolution: The Power of String Interning" />
