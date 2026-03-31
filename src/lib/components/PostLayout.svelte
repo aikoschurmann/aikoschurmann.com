@@ -7,18 +7,23 @@
   let activeId = $state("");
 
   onMount(() => {
-    // 1. Find all h2 and h3 elements inside the article prose
-    const elements = Array.from(document.querySelectorAll('.prose h2, .prose h3'));
+    // 1. Find the main title and all h2/h3 elements
+    const elements = Array.from(document.querySelectorAll('.post-title, .prose h2, .prose h3'));
 
     headings = elements.map((el) => {
       // Create an ID for the heading if markdown didn't automatically generate one
       if (!el.id) {
         el.id = el.textContent?.toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'section';
       }
+      
+      let depth = 2;
+      if (el.classList.contains('post-title')) depth = 1;
+      else if (el.tagName === 'H3') depth = 3;
+
       return {
         id: el.id,
         text: el.textContent || '',
-        depth: el.tagName === 'H3' ? 3 : 2
+        depth: depth
       };
     });
 
@@ -26,7 +31,6 @@
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          // Trigger when the heading crosses the top 20% of the viewport
           if (entry.isIntersecting) {
             activeId = entry.target.id;
           }
@@ -51,7 +55,7 @@
   <article class="post-container">
     <header class="post-header">
       <div class="meta">{date}</div>
-      <h1 class="post-title">{title}</h1>
+      <h1 class="post-title" id="introduction">{title}</h1>
     </header>
 
     <div class="prose">
@@ -93,16 +97,16 @@
   /* --- CSS Grid Layout --- */
   .post-layout {
     display: grid;
-    /* Creates 3 columns: 1 flexible left, 1 centered 680px for text, 1 flexible right */
-    grid-template-columns: 1fr minmax(auto, 680px) 1fr;
-    gap: 2rem;
-    align-items: start; /* CRITICAL: Prevents columns from stretching, allowing sticky to work */
+    /* Widened the 3rd column and increased gap for a more spacious feel */
+    grid-template-columns: 1fr 680px 1.4fr;
+    gap: 4rem;
+    align-items: start; 
     max-width: 100%;
   }
 
   .post-container {
     grid-column: 2;
-    min-width: 0; /* Prevents long text/code blocks from blowing out the grid */
+    min-width: 0;
     padding-bottom: 2rem;
   }
 
@@ -110,13 +114,9 @@
   .toc-sidebar {
     grid-column: 3;
     position: sticky;
-    top: 6rem; /* Stays fixed near the top of the screen */
-    padding-left: 1.5rem;
-    border-left: 1px solid var(--border);
+    top: 6rem;
     max-height: calc(100vh - 8rem);
     overflow-y: auto;
-    
-    /* Hide scrollbar for cleaner look */
     scrollbar-width: none;
   }
   
@@ -144,6 +144,7 @@
     letter-spacing: -0.05em;
     line-height: 1;
     margin-bottom: 0;
+    scroll-margin-top: 10rem;
   }
 
   .post-footer {
@@ -193,32 +194,55 @@
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.25rem;
+    border-left: 1px solid var(--border);
   }
 
   .toc-link {
     display: block;
     font-family: var(--font-sans);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: var(--fg-muted);
     text-decoration: none;
-    line-height: 1.4;
-    transition: color 0.2s ease;
+    line-height: 1.5;
+    transition: all 0.2s ease;
+    padding: 0.4rem 1rem;
+    border-left: 2px solid transparent;
+    margin-left: -1px;
+  }
+
+  /* Title (depth-1) now looks exactly like a normal section (depth-2) */
+  .toc-link.depth-1,
+  .toc-link.depth-2 {
+    font-weight: 600;
   }
 
   /* Indents H3 tags to show hierarchy */
   .toc-link.depth-3 {
-    padding-left: 1rem;
-    font-size: 0.8rem;
+    padding-left: 2rem;
+    font-size: 0.75rem;
+    opacity: 0.8;
   }
 
   .toc-link:hover {
-    color: #ffffff;
+    color: var(--fg);
+    background: rgba(255, 255, 255, 0.03);
   }
 
   .toc-link.active {
     color: var(--accent);
-    font-weight: 600;
+    border-left-color: var(--accent);
+    background: rgba(59, 130, 246, 0.05);
+  }
+
+  .toc-link.depth-1.active,
+  .toc-link.depth-2.active {
+    font-weight: 700;
+  }
+
+  .toc-link.depth-3.active {
+    color: var(--fg);
+    border-left-color: var(--accent);
   }
 
   /* Automatically hide the sidebar and revert to a single column on smaller screens */

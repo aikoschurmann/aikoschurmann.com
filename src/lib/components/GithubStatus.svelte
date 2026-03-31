@@ -78,21 +78,21 @@
     font-family: var(--font-mono);
     font-size: 0.65rem;
     font-weight: 700;
-    color: #94a3b8;
+    color: #64748b;
     letter-spacing: 0.05em;
   }
   .commit-date {
     font-family: var(--font-mono);
     font-size: 0.65rem;
     font-weight: 600;
-    color: #64748b;
+    color: #475569;
   }
   .pulse-dot {
     width: 6px;
     height: 6px;
-    background: #3b82f6; 
+    background: #2563eb; 
     border-radius: 50%;
-    box-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
+    box-shadow: 0 0 8px rgba(37, 99, 235, 0.4);
     animation: pulse 2s infinite;
   }
   @keyframes pulse {
@@ -109,7 +109,7 @@
     font-weight: 700;
   }
   .message {
-    color: #64748b;
+    color: #334155;
     font-style: italic;
   }
 </style>

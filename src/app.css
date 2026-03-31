@@ -4,14 +4,14 @@
   --font-sans: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
   --font-serif: 'Newsreader', 'Charter', 'Georgia', serif;
   --font-mono: ui-monospace, 'JetBrains Mono', monospace;
-  --bg: #0a0a0a;
-  --card-bg: #141414;
+  --bg: #151312;
+  --card-bg: #1e1e1e;
   --fg: #ffffff;
-  --fg-muted: #888888;
-  --fg-dark: #222222;
-  --border: rgba(255, 255, 255, 0.08);
+  --fg-muted: #a0a0a0;
+  --fg-dark: #4a4a4a;
+  --border: rgba(255, 255, 255, 0.1);
   --accent: #3b82f6;
-  --radius: 24px;
+  --radius: 12px;
   --max-width: 1100px;
 }
 
@@ -38,14 +38,14 @@ header.site-header {
 }
 
 nav.dock {
-  background: rgba(20, 20, 20, 0.8);
+  background: rgba(26, 24, 23, 0.7);
   backdrop-filter: blur(20px);
   border: 1px solid var(--border);
   padding: 0.4rem 0.8rem;
-  border-radius: 20px;
+  border-radius: 12px;
   display: flex;
   gap: 1.5rem;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
 }
 
 .nav-item {
@@ -57,11 +57,11 @@ nav.dock {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
-  transition: opacity 0.2s ease;
+  border-radius: 8px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .nav-item svg { width: 18px; height: 18px; stroke-width: 2; }
-.nav-item:hover { opacity: 0.7; }
+.nav-item:hover { background: rgba(255, 255, 255, 0.06); }
 
 .nav-item::after {
   content: attr(data-tooltip);
@@ -69,10 +69,10 @@ nav.dock {
   top: calc(100% + 15px);
   left: 50%;
   transform: translateX(-50%) translateY(-5px);
-  background: #1a1a1a;
+  background: #1e1c1b;
   color: white;
   padding: 0.4rem 0.8rem;
-  border-radius: 8px;
+  border-radius: 4px;
   font-size: 0.75rem;
   font-weight: 600;
   opacity: 0;
@@ -98,9 +98,9 @@ nav.dock {
 
 /* --- Refined Profile Card --- */
 .profile-card {
-  background: #ffffff;
+  background: #f9f9f9;
   border: none;
-  border-radius: 32px; 
+  border-radius: 16px; 
   padding: 2rem 1.5rem 1.5rem 1.5rem;
   text-align: center; 
   display: flex;
@@ -113,7 +113,7 @@ nav.dock {
   width: 88%; 
   height: auto;
   aspect-ratio: 1.0; 
-  border-radius: 20px; 
+  border-radius: 10px; 
   object-fit: cover;
   margin-bottom: 2rem !important; 
   background: var(--accent); 
@@ -125,12 +125,12 @@ nav.dock {
   font-weight: 800; 
   letter-spacing: -0.04em;
   margin-bottom: 0.75rem; 
-  color: #000000;
+  color: #0f172a;
 }
 
 .profile-card p {
   font-size: 0.95rem;
-  color: #64748b; 
+  color: #475569; 
   font-weight: 500;
   margin-bottom: 0.75rem; 
   line-height: 1.5;
@@ -167,16 +167,18 @@ nav.dock {
   display: flex;
   flex-direction: column;
   padding: 1.5rem;
-  border-radius: 20px;
-  background: transparent;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
   text-decoration: none;
   color: inherit;
-  transition: background-color 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   height: 100%;
 }
 
 .project-card-minimal:hover {
-  background: #1a1a1a;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .project-card-minimal .card-header {
@@ -196,7 +198,7 @@ nav.dock {
   width: 42px;
   height: 42px;
   background: #222;
-  border-radius: 10px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -205,6 +207,7 @@ nav.dock {
   color: var(--fg-muted);
   border: 1px solid var(--border);
   margin: 0;
+  transition: all 0.3s ease;
 }
 
 .project-card-minimal h3 {
@@ -236,6 +239,8 @@ nav.dock {
   letter-spacing: 0.05em;
   font-family: var(--font-mono);
   text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .filter-row {
@@ -250,7 +255,7 @@ nav.dock {
   border: 1px solid var(--border);
   color: var(--fg-muted);
   padding: 0.6rem 1.25rem;
-  border-radius: 20px;
+  border-radius: 8px;
   font-family: var(--font-sans);
   font-size: 0.8rem;
   font-weight: 600;
@@ -274,50 +279,109 @@ nav.dock {
 .project-list {
   display: flex;
   flex-direction: column;
+  gap: 1.5rem;
 }
 
-.project-row {
+.post-card {
+  position: relative;
   display: flex;
-  align-items: center;
-  padding: 2rem 1.25rem;
-  margin: 0 -1.25rem;
-  border-radius: 20px;
+  flex-direction: column;
+  padding: 1.5rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
   text-decoration: none;
   color: inherit;
-  transition: background-color 0.2s ease;
+  transition: all 0.3s ease;
 }
 
-.project-row:hover { background: #1a1a1a; }
-
-.project-main { flex: 1; }
-.project-main h3 {
-  font-size: 1.3rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  margin-bottom: 0.3rem;
+.post-card:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
-.thought-desc {
-  font-size: 1rem;
-  color: var(--fg-muted);
-  margin: 0.5rem 0 1.25rem;
-  line-height: 1.6;
-  max-width: 500px;
-}
-
-.project-row .project-tags {
+.post-card .card-header {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.card-header-left {
+  display: flex;
+  align-items: center;
   gap: 1rem;
 }
 
-.arrow {
+.post-thumb {
+  width: 42px;
+  height: 42px;
+  background: #222;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fg-muted);
+  border: 1px solid var(--border);
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.post-card h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.post-desc {
+  font-size: 1rem;
+  color: var(--fg-muted);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  max-width: 500px;
+}
+
+.post-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+.post-meta span:not(.post-tag) {
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--fg-muted);
+}
+
+.post-meta .post-tag {
+  margin-left: auto;
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+}
+
+.post-card .arrow {
   color: var(--accent);
   opacity: 0.6;
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
-.project-row:hover .arrow,
-.project-card-minimal:hover .arrow {
+.post-card:hover .arrow {
   transform: translateX(4px) translateY(-4px);
   opacity: 1;
 }
@@ -355,12 +419,12 @@ nav.dock {
   font-family: var(--font-serif);
   font-style: italic;
   font-size: 1.5rem;
-  color: #aaaaaa;
+  color: #d1d5db;
 }
 
 .prose img, .prose iframe, .prose video {
   max-width: 100%;
-  border-radius: 12px;
+  border-radius: 8px;
   margin: 2rem auto;
   display: block;
 }
@@ -374,12 +438,12 @@ nav.dock {
   margin-bottom: 3rem;
 }
 
-.prose pre {
+.prose pre, .prose .shiki {
   max-width: 100%;
   overflow-x: auto;
-  background: var(--card-bg);
+  background: var(--card-bg) !important;
   padding: 1.5rem;
-  border-radius: 12px;
+  border-radius: 8px;
   border: 1px solid var(--border);
   font-family: var(--font-mono);
   font-size: 0.9rem;
@@ -466,7 +530,7 @@ footer {
   border: 1px solid var(--border);
   color: var(--fg);
   padding: 0.5rem 1rem;
-  border-radius: 20px;
+  border-radius: 8px;
   font-family: var(--font-sans);
   font-size: 0.8rem;
   font-weight: 600;

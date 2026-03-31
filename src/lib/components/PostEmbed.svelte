@@ -1,21 +1,23 @@
 <script lang="ts">
-  import { projects } from '$lib/data';
+  import { thoughts } from '$lib/data';
   
   let { id } = $props();
 
-  const project = $derived(projects.find(p => p.title === id));
+  const post = $derived(thoughts.find(t => t.title === id));
 </script>
 
-{#if project}
+{#if post}
   <div class="embed-wrapper">
-    <!-- Invisible absolute link stretches over the whole card to make it clickable -->
-    <a href={project.url} target="_blank" rel="noopener" class="absolute-link" aria-label={project.title}></a>
+    <a href={post.url} class="absolute-link" aria-label={post.title}></a>
     
     <div class="card-header">
       <div class="card-header-left">
-        <div class="project-thumb">{project.thumb}</div>
-        <!-- Changed from h3 to div so the Table of Contents ignores it -->
-        <div class="embed-title">{project.title}</div>
+        <div class="post-thumb">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+          </svg>
+        </div>
+        <div class="embed-title">{post.title}</div>
       </div>
       <div class="arrow">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -24,16 +26,16 @@
       </div>
     </div>
     
-    <p class="embed-desc">{project.description}</p>
+    <p class="embed-desc">{post.description}</p>
     
-    <div class="project-tags">
-      {#each project.tags as tag}
-        <span style={tag.style}>{tag.name}</span>
-      {/each}
+    <div class="post-meta">
+      <span>{post.date}</span>
+      <span>{post.readTime}</span>
+      <span class="post-tag" style={post.tag.style}>{post.tag.name}</span>
     </div>
   </div>
 {:else}
-  <div class="error">Project "{id}" not found in data.ts.</div>
+  <div class="error">Post "{id}" not found in data.ts.</div>
 {/if}
 
 <style>
@@ -43,7 +45,7 @@
     flex-direction: column;
     padding: 1.5rem;
     border-radius: 12px;
-    background: transparent;
+    background: rgba(255, 255, 255, 0.02);
     border: 1px solid var(--border); 
     color: var(--fg);
     transition: background-color 0.2s ease, border-color 0.2s ease;
@@ -51,7 +53,7 @@
   }
 
   .embed-wrapper:hover {
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(255, 255, 255, 0.05);
     border-color: rgba(255, 255, 255, 0.2);
   }
 
@@ -79,7 +81,7 @@
     gap: 1rem;
   }
 
-  .project-thumb {
+  .post-thumb {
     width: 42px;
     height: 42px;
     background: #222;
@@ -87,39 +89,39 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.7rem;
-    font-weight: 800;
     color: var(--fg-muted);
     border: 1px solid var(--border);
     margin: 0;
   }
 
-  /* Swapped to target the .embed-title class instead of h3 */
   .embed-title {
     font-family: var(--font-sans) !important;
-    font-size: 1.15rem !important;
+    font-size: 1.3rem !important;
     font-weight: 600 !important;
     margin: 0 !important;
     letter-spacing: -0.01em !important;
     color: var(--fg) !important;
-    line-height: 1 !important;
+    line-height: 1.2 !important;
   }
 
   p.embed-desc {
     font-family: var(--font-sans) !important;
-    font-size: 0.9rem !important;
+    font-size: 1rem !important;
     color: var(--fg-muted) !important;
-    line-height: 1.5 !important;
-    margin: 0 0 1.5rem 0 !important;
+    line-height: 1.6 !important;
+    margin: 0 0 1.25rem 0 !important;
+    max-width: 500px !important;
   }
 
-  .project-tags {
+  .post-meta {
     display: flex;
-    flex-wrap: wrap;
+    align-items: center;
     gap: 0.5rem;
+    margin-top: auto;
   }
 
-  .project-tags span {
+  .post-tag {
+    margin-left: auto;
     padding: 0.35rem 0.6rem;
     border-radius: 6px;
     font-size: 0.65rem;

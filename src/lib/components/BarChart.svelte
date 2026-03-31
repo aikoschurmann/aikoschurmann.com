@@ -46,7 +46,7 @@
         fill-opacity={hoveredBar === bar ? "0.9" : "0.7"}
         stroke={hoveredBar === bar ? (bar.color || "#6366f1") : "none"}
         stroke-width={hoveredBar === bar ? "2" : "0"}
-        rx="6"
+        rx="4"
         onmouseenter={() => hoveredBar = bar}
         onmouseleave={() => hoveredBar = null}
         class="bar"
@@ -71,8 +71,8 @@
         <rect 
           width={tooltipWidth} 
           height={tooltipHeight} 
-          rx="8" 
-          fill="#1a1a1a" 
+          rx="6" 
+          fill="#1e1c1b" 
           stroke="rgba(255,255,255,0.1)" 
           stroke-width="1"
           filter="url(#shadow)" 
@@ -102,18 +102,18 @@
 
 <style>
   .chart-wrapper {
-    background: #0f0f0f;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
     padding: 2rem;
     margin: 2rem 0;
     width: 100%;
   }
 
   .chart-title {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: var(--font-sans);
     font-size: 0.875rem;
-    color: #6b7280;
+    color: var(--fg-muted);
     margin-bottom: 2rem;
     text-align: center;
     font-weight: 500;
@@ -133,27 +133,27 @@
   }
 
   .axis-text { 
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: var(--font-sans);
     font-size: 11px; 
-    fill: #6b7280; 
+    fill: #94a3b8; 
     font-weight: 400;
   }
 
   .label-text { 
-    fill: #9ca3af;
+    fill: #cbd5e1;
     font-weight: 500;
     letter-spacing: 0.01em;
   }
 
   .tooltip-label {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: var(--font-sans);
     font-size: 11px;
-    fill: #9ca3af;
+    fill: #94a3b8;
     font-weight: 500;
   }
 
   .tooltip-value {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: var(--font-sans);
     font-size: 13px;
     fill: #f3f4f6;
     font-weight: 600;

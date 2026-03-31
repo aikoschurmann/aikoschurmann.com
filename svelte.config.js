@@ -1,6 +1,39 @@
-import { mdsvex } from 'mdsvex';
+import { mdsvex, escapeSvelte } from 'mdsvex';
 import adapter from '@sveltejs/adapter-cloudflare';
 import { relative, sep, resolve } from 'node:path';
+import { createHighlighter } from 'shiki';
+
+let highlighter;
+
+/** @type {import('mdsvex').MdsvexOptions} */
+const mdsvexOptions = {
+	extensions: ['.svx', '.md'],
+	layout: {
+		blog: resolve(import.meta.dirname, './src/lib/components/PostLayout.svelte')
+	},
+	highlight: {
+		highlighter: async (code, lang = 'text') => {
+			if (!highlighter) {
+				highlighter = await createHighlighter({
+					themes: ['nord'],
+					langs: ['javascript', 'typescript', 'zig', 'c', 'cpp', 'bash', 'json', 'rust', 'asm']
+				});
+			}
+			
+			// Load language if not already loaded, handle potential unknown languages
+			try {
+				if (lang !== 'text' && !highlighter.getLoadedLanguages().includes(lang)) {
+					await highlighter.loadLanguage(lang);
+				}
+			} catch (e) {
+				lang = 'text';
+			}
+
+			const html = escapeSvelte(highlighter.codeToHtml(code, { lang, theme: 'nord' }));
+			return `{@html \`${html}\` }`;
+		}
+	}
+};
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -22,12 +55,7 @@ const config = {
 		adapter: adapter()
 	},
 	preprocess: [
-		mdsvex({
-			extensions: ['.svx', '.md'],
-			layout: {
-				blog: resolve(import.meta.dirname, './src/lib/components/PostLayout.svelte')
-			}
-		})
+		mdsvex(mdsvexOptions)
 	],
 	extensions: ['.svelte', '.svx', '.md']
 };
