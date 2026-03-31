@@ -5,14 +5,14 @@
 </script>
 
 <svelte:head>
-  <title>Aiko Schürmann | Projects Archive</title>
+  <title>Aiko Schurmann | Projects Archive</title>
 </svelte:head>
 
 <div class="identity-grid reverse-mobile">
   <aside class="profile-sidebar">
     <div class="profile-card">
-      <img src="/picture.jpg" alt="Aiko Schürmann" class="profile-img" />
-      <h2>Aiko Schürmann</h2>
+      <img src="/picture.jpg" alt="Aiko Schurmann" class="profile-img" />
+      <h2>Aiko Schurmann</h2>
       <p>Low-level software engineer in training. Building efficient software close to the hardware.</p>
       
       <GithubStatus />

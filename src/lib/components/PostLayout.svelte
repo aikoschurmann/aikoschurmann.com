@@ -46,7 +46,7 @@
 </script>
 
 <svelte:head>
-  <title>{title} | Aiko Schürmann</title>
+  <title>{title} | Aiko Schurmann</title>
 </svelte:head>
 
 <div class="post-layout">

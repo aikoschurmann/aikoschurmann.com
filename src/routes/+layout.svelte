@@ -3,6 +3,12 @@
   let { children } = $props();
 </script>
 
+<svelte:head>
+  <meta name="description" content="Aiko Schurmann - Low-level software engineer focused on systems, compilers, and efficient software." />
+  <meta property="og:site_name" content="Aiko Schurmann" />
+  <meta property="og:type" content="website" />
+</svelte:head>
+
 <div class="container">
   <header class="site-header">
     <nav class="dock">
@@ -33,7 +39,7 @@
   <footer>
     <div class="footer-content">
       <div class="footer-left">
-        <span class="footer-name">Aiko Schürmann</span>
+        <span class="footer-name">Aiko Schurmann</span>
         <span class="footer-status"><span class="status-dot"></span> Available for new opportunities</span>
       </div>
       <div class="footer-right">
