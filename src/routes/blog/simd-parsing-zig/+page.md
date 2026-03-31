@@ -220,5 +220,3 @@ This level of performance requires a compromise. Because zog is a "Blind Scanner
 `{"id": 1, "meta": {"id": 2}}`
 
 Searching for `id eq 2` will match this line, even if you only wanted root-level IDs. For flat logs, this is irrelevant. For deeply nested, complex schemas, you should use `jq`. But when you have 500GB of logs and 5 minutes to find a bug, **zog** is the only tool that will get you there in time.
-
-<PostEmbed id="The Nitty Gritty of zog: Pushing JSONL to 4.0 GB per second" />
