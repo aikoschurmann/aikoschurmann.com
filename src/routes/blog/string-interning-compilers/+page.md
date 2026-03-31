@@ -232,10 +232,31 @@ While this hierarchy works perfectly, other high-performance compilers sometimes
 
 **2. Memory Efficiency and Cache Locality.** Because the IDs are contiguous, we can store metadata in compact, cache-friendly structures. When the compiler iterates over all symbols, it's performing a linear scan over a contiguous block of memory. This maximizes CPU cache hits and minimizes the memory overhead associated with sparse data structures like Hash Maps.
 
-**3. Instant Type and Symbol Comparisons.** By paying the **O(L)** cost exactly once in the Lexer, every string is converted into a unique pointer and a unique ID. 
+**3. Instant Type and Symbol Comparisons.** Interning isn't just for strings; it's a strategy for **structural canonicalization**. When we intern complex types (like "pointer to i32" or "function returning bool"), we ensure that every identical type in the entire program points to the exact same memory address.
 
-- **Pointer Equality**: `if (type_a->name == type_b->name)` is a single instruction.
-- **Set Membership**: Checking if a symbol is in a specific set can be done with a simple Bitset, where each bit corresponds to a Dense ID.
+This creates a **recursive shortcut**. Even the process of interning a new complex type is fast because its constituents (return types, parameters, base types) are already interned. Instead of a deep, recursive structural check, we only need to perform a "shallow" comparison of the component pointers.
+
+```c
+// Interning a complex function type is just a shallow pointer check
+// because 'ret' and 'params' are already canonical pointers.
+bool type_compare(Type *a, Type *b) {
+    if (a->kind != b->kind) return false;
+    if (a->ret != b->ret) return false; // Simple pointer comparison
+    if (a->param_count != b->param_count) return false;
+    
+    // Check if the parameter pointer arrays match
+    return memcmp(a->params, b->params, a->param_count * sizeof(Type*)) == 0;
+}
+```
+
+By ensuring that every "child" type is already canonical, the interner can determine if a "parent" type exists without ever walking more than one level deep. Once the type is interned, the rest of the compiler can compare complex signatures as if they were simple integers.
+
+```c
+// The ultimate win: O(1) equality everywhere else
+if (type_a == type_b) {
+    // Verified identical signatures in a single CPU instruction
+}
+```
 
 ## The Result: Free Resolution
 
