@@ -46,6 +46,18 @@
 
     return () => observer.disconnect();
   });
+
+  $effect(() => {
+    if (activeId) {
+      const activeLink = document.querySelector(`.toc-link[href="#${activeId}"]`);
+      if (activeLink) {
+        activeLink.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest'
+        });
+      }
+    }
+  });
 </script>
 
 <svelte:head>

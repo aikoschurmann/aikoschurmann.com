@@ -1,9 +1,9 @@
 ---
 layout: blog
-title: "O(1) Symbol Resolution: The Power of String Interning"
+title: "Dense Arena Interning: The Engine of Compiler Performance"
 date: "MARCH 31, 2026"
 author: "Aiko Schürmann"
-description: "A deep dive into the Dense Arena Interner: moving from O(N*L) string matching to O(1) integer comparisons."
+description: "How paying the O(L) hashing cost upfront buys you O(1) lookups everywhere else—and why dense indexing transforms your symbol tables."
 tag: "INTERNING"
 showOnHome: true
 ---
@@ -13,15 +13,17 @@ showOnHome: true
   import PostEmbed from '$lib/components/PostEmbed.svelte';
 </script>
 
-Compilers spend a massive amount of time looking at names. Every variable, function, and keyword in your source code is a string that needs to be identified, categorized, and resolved.
+Compilers spend a massive amount of time looking at names and structures. Every variable, function, and keyword in your source code is a string that needs to be identified, categorized, and resolved across multiple compiler phases.
 
-If you aren't careful, the system will spend more time doing string math than actually generating code. I implemented a **Dense Arena Interner** to make symbol resolution effectively free.
+The problem isn't just matching strings or comparing type signatures—it's doing it **over and over again** across the entire pipeline. The same variable name `counter` might be checked hundreds of times: initially in the lexer, again in the parser, repeatedly in the type checker, and throughout optimization passes.
 
-Here is the technical journey from slow text matching to instant integer comparisons.
+I implemented a **Dense Arena Interner** to solve this by converting strings and structures into dense integers the moment they are created. We pay the hashing cost upfront during lexing or type construction. In exchange, every subsequent phase of the compiler gets to rely entirely on O(1) array indexing and single-instruction pointer comparisons.
+
+Here's the technical journey from repeated, expensive structural checks to hardware-level integer comparisons.
 
 <ProjectEmbed id="compiler-v3" />
 
-## The Linear Bottleneck: O(N * L)
+## The Linear Bottleneck: O(N*L)
 
 Imagine a Lexer scanning your code. It finds the characters `f-u-n-c`. It needs to know: "Is this a keyword like `func` or `return`, or is it a variable name?"
 
@@ -74,7 +76,7 @@ bool hashmap_put(HashMap* map, void* key, void* value) {
 }
 ```
 
-While O(L) is much better than O(N * L), we are still paying the hashing price **every time** we encounter that string in the Parser, Typechecker, or Optimizer. We need a way to pay that O(L) cost **exactly once** and then use **O(1)** for the rest of the execution.
+While O(L) is much better than O(N * L), we are still paying the hashing price **every time** we encounter that string in the Parser, Typechecker, or Optimizer. We need a way to phase-shift this cost away from all stages to just the Lexer.
 
 ## The Foundation: Stable Memory (The Arena)
 
@@ -98,13 +100,37 @@ typedef struct {
 
 Allocation in an Arena is just "bumping" a pointer forward. Once a string is stored in an Arena block, its address **never changes**. This stability allows us to use the pointer itself as a unique ID.
 
+```c
+void *arena_alloc(Arena *arena, size_t size) {
+    if (!arena) return NULL;
+    if (size == 0) return NULL; /* semantic choice */
+
+    const size_t align = alignof(max_align_t);
+
+    ArenaBlock *block = arena->blocks;
+    if (!block) return NULL;
+
+    /* align the *offset*, not just the size */
+    size_t offset = align_up(block->used, align);
+
+    /* If not enough room in current block, allocate a new one */
+    if (offset + size > block->capacity) {
+        arena_add_block(arena);
+    }
+
+    void *ptr = (void*)(block->data + offset);
+    block->used = offset + align_up(size, align); /* bump after alignment */
+    return ptr;
+}
+```
+
 However, there is a catch: the **"Un-freeable" Nature of Arenas**. Arena allocators are perfect for batch compilers because you usually just drop the entire memory block at the end of compilation. But if this compiler is ever adapted to run as a long-lived **Language Server Protocol (LSP)** daemon, memory could balloon since arenas cannot free individual interned strings as files change.
 
 ## Core Abstractions: Slice and InternResult
 
 Before looking at the interner itself, we need to define the two core data structures used to pass data around.
 
-**Slice:** A lightweight reference to a string. It doesn't own its memory; it just points to a start and a length. This allows the Lexer to point directly into the source file buffer without copying.
+**Slice:** A lightweight reference to a string or object. It doesn't own its memory; it just points to a start and a length. This allows the Lexer to point directly into the source file buffer without copying.
 
 ```c
 typedef struct {
@@ -122,21 +148,21 @@ typedef struct {
 } InternResult;
 ```
 
-## The Dense Arena Interner: O(1)
+## The Dense Arena Interner: Buying O(1) Lookups
 
-String interning deduplicates strings so that only one "canonical" copy exists. The **Dense** part of this implementation refers to how we identify these strings. Instead of just using pointers, we assign every unique string a contiguous, zero-indexed integer (0, 1, 2...). 
+Interning deduplicates data—whether that's a string identifier or a complex type struct—so that only one "canonical" copy exists. The **Dense** part of this implementation refers to how we identify these objects. Instead of just using pointers, we assign every unique item a contiguous, zero-indexed integer (0, 1, 2...). 
 
-The `DenseArenaInterner` uses the Hash Map to find existing strings and the Arena to store new ones.
+The `DenseArenaInterner` uses the Hash Map to find existing entries and the Arena to store new ones.
 
 ```c
 typedef struct {
-    Arena *arena;           // Where canonical strings live
-    HashMap *hashmap;       // Maps Slice -> InternResult*
+    Arena *arena;           // Where canonical data lives
+    HashMap *hashmap;       // Maps raw data -> InternResult*
     int dense_index_count;  // Counter for the Dense ID (0, 1, 2...)
 } DenseArenaInterner;
 ```
 
-When we intern a string, we check the Hash Map. If it's already there, we return the existing `InternResult`. If not, we copy it into the Arena exactly once and increment our `dense_index_count`. This ensures that if we've seen 500 unique strings, they are mapped to the integers 0 through 499.
+When we intern an item, we check the Hash Map. If it's already there, we return the existing `InternResult`. If not, we copy it into the Arena exactly once and increment our `dense_index_count`. This ensures that if we've seen 500 unique objects, they are mapped to the integers 0 through 499.
 
 ```c
 // dense_arena_interner.c - Simplified interning loop
@@ -162,11 +188,11 @@ InternResult* intern(DenseArenaInterner *table, Slice *key) {
 }
 ```
 
-## Lexer Integration
+## Lexer Integration: The Memory Win
 
-The real performance gain happens during the Lexer's initialization and scanning. The Lexer maintains separate interners for keywords and identifiers.
+The lexer maintains two separate interners: one for **Keywords** and one for **Identifiers**.
 
-**Startup: Bootstrapping Keywords.** When the compiler starts, we pre-populate the keyword table. This ensures every keyword is already "canonical" before we scan a single line of code.
+**Startup: Bootstrapping Keywords.** When the compiler starts, we pre-populate the keyword table. This ensures every keyword is already "canonical" and inside the hash map before we scan a single line of code.
 
 ```c
 // lexer.c - Initialization logic
@@ -181,7 +207,7 @@ for (size_t i = 0; KEYWORDS[i].word; i++) {
 }
 ```
 
-**Runtime: The Instant Check.** Now, when the Lexer scans a word, it uses `intern_peek`—a function that checks the keyword map without allocating new memory.
+**Runtime: The O(L) Check.** Now, when the Lexer scans a word, it uses `intern_peek`—a function that checks the keyword map without allocating new memory.
 
 ```c
 // lexer.c - Identifier scanning
@@ -202,13 +228,18 @@ static void *lexer_lex_identifier(Lexer *lexer, ...) {
 }
 ```
 
-## Beyond Hashing: The Power of Dense IDs
+**What did we gain in the lexer?** Crucially, **we didn't gain speed**. Both a standard hash map and an interner are **O(L)** operations for the lexer. The win here is twofold:
 
-While O(1) speed is the primary goal, the **Dense ID** system provides several architectural "superpowers" that simplify the rest of the compiler.
+1.  **Memory deduplication:** If `return` appears 500 times, we store it once instead of 500 times.
+2.  **Dense Indexing Generation:** By assigning each identifier a contiguous **Dense ID**, we enable the later compiler phases—specifically the **Scoping** and **Type Checking** systems—to use these IDs for **O(1)** flat-array lookups.
+
+The lexer pays the **O(L)** "toll" to generate these IDs, but it is the rest of the compiler that cashes in on the performance.
+
+## Beyond Hashing: The Power of Dense IDs
 
 **1. Flat Array Symbol Tables.** This is the most significant benefit. In a traditional compiler, the Symbol Table is often another complex Hash Map. With Dense IDs, the Symbol Table becomes a **flat array**. 
 
-Since every variable name is guaranteed to have an ID between 0 and `N`, we can use that ID as a direct index into an array. This turns symbol resolution into a single memory offset calculation—the fastest possible way to access data.
+Since every variable name is guaranteed to have an ID between 0 and `N`, we can use that ID as a direct index into an array. This turns symbol resolution into a single memory offset calculation—the fastest possible way to access data, which is **O(1)**.
 
 **Handling Variable Shadowing.** One complexity is lexical scoping. If a variable `index` is declared in a global scope, and then shadowed by an `index` parameter in a nested function, both strings resolve to the exact same Dense ID. We solve this by maintaining a hierarchy of Scopes, each with its own sparse array.
 
@@ -260,5 +291,6 @@ if (type_a == type_b) {
 
 ## The Result: Free Resolution
 
-Work done in the lexer results in every string being converted into a unique pointer. From that point on, the Parser, Typechecker, and Optimizer never use `strcmp` again. String interning transforms the compiler from a slow text processor into a lean, integer-crunching machine. This optimization ensures the entire front-end pipeline feels practically instantaneous.
+By paying the hashing cost upfront during lexing and type construction, every identifier and complex structure is converted into a unique pointer and a dense ID. 
 
+From that point on, the Parser, Typechecker, and Optimizer never use `strcmp` or deep recursive structural checks again. Dense arena interning transforms the compiler from a slow text and tree processor into a lean, integer-crunching machine. This optimization ensures the entire front-end pipeline feels practically instantaneous.
