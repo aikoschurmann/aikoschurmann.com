@@ -1,10 +1,13 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { page } from '$app/state';
   
   let { title, date, children } = $props();
 
   let headings = $state<{ id: string; text: string; depth: number }[]>([]);
   let activeId = $state("");
+
+  const canonicalUrl = $derived(`https://aikoschurmann.com${page.url.pathname}`);
 
   onMount(() => {
     // 1. Find the main title and all h2/h3 elements
@@ -47,6 +50,18 @@
 
 <svelte:head>
   <title>{title} | Aiko Schurmann</title>
+  <meta name="description" content="Research and technical thoughts on {title} by Aiko Schurmann." />
+  <link rel="canonical" href={canonicalUrl} />
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content={title} />
+  <meta property="og:url" content={canonicalUrl} />
+  <meta property="og:type" content="article" />
+  <meta property="article:published_time" content={date} />
+  <meta property="article:author" content="Aiko Schurmann" />
+  
+  <!-- Twitter -->
+  <meta name="twitter:title" content={title} />
 </svelte:head>
 
 <div class="post-layout">
@@ -98,7 +113,7 @@
   .post-layout {
     display: grid;
     /* Widened the 3rd column and increased gap for a more spacious feel */
-    grid-template-columns: 1fr 680px 1.4fr;
+    grid-template-columns: 1fr 680px 1.6fr;
     gap: 4rem;
     align-items: start; 
     max-width: 100%;
