@@ -222,6 +222,17 @@ nav.dock {
   flex-grow: 1;
 }
 
+.project-card-minimal .arrow {
+  color: var(--accent);
+  opacity: 0.6;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.project-card-minimal:hover .arrow {
+  transform: translateX(4px) translateY(-4px);
+  opacity: 1;
+}
+
 .project-tags {
   display: flex;
   flex-wrap: wrap;
@@ -574,7 +585,7 @@ footer {
     aspect-ratio: 1.0;
     margin: 0 auto 2.5rem auto !important;
   }
-  
+
   .hero-content { 
     width: 100%; 
     text-align: center; 
