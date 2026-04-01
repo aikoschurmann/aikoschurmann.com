@@ -173,6 +173,11 @@
       padding: 1.25rem;
     }
 
+    p.embed-desc {
+      font-size: 0.95rem !important;
+      margin: 0 0 1rem 0 !important;
+    }
+
     .post-meta span:not(.post-tag),
     .post-tag {
       font-size: 0.6rem;

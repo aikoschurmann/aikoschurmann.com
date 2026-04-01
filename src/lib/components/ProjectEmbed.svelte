@@ -102,7 +102,7 @@
     margin: 0 !important;
     letter-spacing: -0.01em !important;
     color: var(--fg) !important;
-    line-height: 1 !important;
+    line-height: 1.2 !important;
   }
 
   p.embed-desc {

@@ -618,6 +618,7 @@ footer {
     padding: 0.3rem 0.5rem;
   }
   .project-card-minimal .arrow, .post-card .arrow { display: none; }
+  .embed-wrapper .arrow { display: none; }
   .prose { font-size: 1.15rem; padding: 0; text-align: left; }
 
   .footer-content { flex-direction: column; align-items: flex-start; gap: 2.5rem; }
