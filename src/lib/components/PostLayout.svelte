@@ -2,12 +2,43 @@
   import { onMount } from 'svelte';
   import { page } from '$app/state';
   
-  let { title, date, children } = $props();
+  let { title, date, description = '', children } = $props<{
+    title: string;
+    date: string;
+    description?: string;
+    children: any;
+  }>();
 
   let headings = $state<{ id: string; text: string; depth: number }[]>([]);
   let activeId = $state("");
 
-  const canonicalUrl = $derived(`https://aikoschurmann.com${page.url.pathname}`);
+  const canonicalUrl = $derived(`${page.url.origin}${page.url.pathname}`);
+  const ogImageUrl = $derived(`${page.url.origin}/picture.jpg`);
+  const fullTitle = $derived(`${title} | Aiko Schurmann`);
+  const metaDescription = $derived(description || `Research and technical thoughts on ${title} by Aiko Schurmann.`);
+  const publishedTime = $derived.by(() => {
+    const parsedDate = new Date(date);
+    if (Number.isNaN(parsedDate.getTime())) return undefined;
+    return parsedDate.toISOString();
+  });
+
+  const articleJsonLd = $derived(
+    JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      headline: title,
+      description: metaDescription,
+      author: {
+        '@type': 'Person',
+        name: 'Aiko Schurmann'
+      },
+      datePublished: publishedTime,
+      dateModified: publishedTime,
+      url: canonicalUrl,
+      image: ogImageUrl,
+      inLanguage: 'en'
+    })
+  );
 
   onMount(() => {
     // 1. Find the main title and all h2/h3 elements
@@ -61,19 +92,28 @@
 </script>
 
 <svelte:head>
-  <title>{title} | Aiko Schurmann</title>
-  <meta name="description" content="Research and technical thoughts on {title} by Aiko Schurmann." />
+  <title>{fullTitle}</title>
+  <meta name="description" content={metaDescription} />
   <link rel="canonical" href={canonicalUrl} />
   
   <!-- Open Graph -->
-  <meta property="og:title" content={title} />
+  <meta property="og:title" content={fullTitle} />
+  <meta property="og:description" content={metaDescription} />
   <meta property="og:url" content={canonicalUrl} />
+  <meta property="og:image" content={ogImageUrl} />
   <meta property="og:type" content="article" />
-  <meta property="article:published_time" content={date} />
+  {#if publishedTime}
+    <meta property="article:published_time" content={publishedTime} />
+  {/if}
   <meta property="article:author" content="Aiko Schurmann" />
   
-  <!-- Twitter -->
-  <meta name="twitter:title" content={title} />
+  <!-- X/Twitter cards work without a Twitter account -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={fullTitle} />
+  <meta name="twitter:description" content={metaDescription} />
+  <meta name="twitter:image" content={ogImageUrl} />
+
+  <script type="application/ld+json">{articleJsonLd}</script>
 </svelte:head>
 
 <div class="post-layout">

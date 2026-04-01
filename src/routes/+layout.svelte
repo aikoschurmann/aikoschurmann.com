@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state';
+  import SiteFooter from '$lib/components/SiteFooter.svelte';
   import '../app.css';
 
   let { children } = $props();
@@ -41,8 +42,9 @@
     };
   });
 
-  const canonicalUrl = $derived(page.url.href);
+  const canonicalUrl = $derived(`${page.url.origin}${page.url.pathname}`);
   const ogImageUrl = $derived(`${page.url.origin}/picture.jpg`);
+  const isDetailPage = $derived(page.url.pathname.startsWith('/blog/') || page.url.pathname.startsWith('/projects/'));
 
   const personJsonLd = $derived(
     JSON.stringify({
@@ -66,21 +68,25 @@
 </script>
 
 <svelte:head>
-  <meta name="description" content={seoData.description} />
   <meta name="robots" content="index, follow" />
-  <link rel="canonical" href={canonicalUrl} />
 
-  <meta property="og:title" content={seoData.title} />
-  <meta property="og:description" content={seoData.description} />
-  <meta property="og:url" content={canonicalUrl} />
-  <meta property="og:image" content={ogImageUrl} />
-  <meta property="og:site_name" content="Aiko Schurmann" />
-  <meta property="og:type" content="website" />
+  {#if !isDetailPage}
+    <meta name="description" content={seoData.description} />
+    <link rel="canonical" href={canonicalUrl} />
 
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content={seoData.title} />
-  <meta name="twitter:description" content={seoData.description} />
-  <meta name="twitter:image" content={ogImageUrl} />
+    <meta property="og:title" content={seoData.title} />
+    <meta property="og:description" content={seoData.description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:site_name" content="Aiko Schurmann" />
+    <meta property="og:type" content="website" />
+
+    <!-- X/Twitter cards work without a Twitter account -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={seoData.title} />
+    <meta name="twitter:description" content={seoData.description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+  {/if}
 
   <script type="application/ld+json">{personJsonLd}</script>
 </svelte:head>
@@ -112,22 +118,5 @@
     {@render children()}
   </main>
 
-  <footer>
-    <div class="footer-content">
-      <div class="footer-left">
-        <span class="footer-name">Aiko Schurmann</span>
-        <span class="footer-status"><span class="status-dot"></span> Available for new opportunities</span>
-      </div>
-      <div class="footer-right">
-        <a href="https://github.com/aikoschurmann" target="_blank" rel="noopener">GitHub</a>
-        <a href="https://linkedin.com/in/aikoschurmann" target="_blank" rel="noopener">LinkedIn</a>
-        <button class="back-to-top" onclick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-          Top 
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 19V5M5 12l7-7 7 7"/>
-          </svg>
-        </button>
-      </div>
-    </div>
-  </footer>
+  <SiteFooter />
 </div>

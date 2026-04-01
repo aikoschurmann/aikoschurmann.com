@@ -6,12 +6,47 @@
 
   const project = $derived(projects.find(p => p.url === page.url.pathname));
   const title = $derived(project?.title || "");
+  const description = $derived(project?.description || 'Systems project by Aiko Schurmann.');
   const github = $derived(project?.github || "");
   const tags = $derived(project?.tags || []);
+  const canonicalUrl = $derived(`${page.url.origin}${page.url.pathname}`);
+  const ogImageUrl = $derived(`${page.url.origin}/picture.jpg`);
+  const fullTitle = $derived(`${title} | Aiko Schurmann`);
+
+  const projectJsonLd = $derived(
+    JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareSourceCode',
+      name: title,
+      description,
+      codeRepository: github || undefined,
+      url: canonicalUrl,
+      author: {
+        '@type': 'Person',
+        name: 'Aiko Schurmann'
+      }
+    })
+  );
 </script>
 
 <svelte:head>
-  <title>{title} | Aiko Schurmann</title>
+  <title>{fullTitle}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={canonicalUrl} />
+
+  <meta property="og:title" content={fullTitle} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonicalUrl} />
+  <meta property="og:image" content={ogImageUrl} />
+  <meta property="og:type" content="article" />
+
+  <!-- X/Twitter cards work without a Twitter account -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={fullTitle} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={ogImageUrl} />
+
+  <script type="application/ld+json">{projectJsonLd}</script>
 </svelte:head>
 
 <div class="post-layout">
