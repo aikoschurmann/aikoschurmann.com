@@ -115,7 +115,19 @@ void *arena_alloc(Arena *arena, size_t size) {
 
     /* If not enough room in current block, allocate a new one */
     if (offset + size > block->capacity) {
-        arena_add_block(arena);
+        size_t new_capacity = arena->block_size;
+        while (new_capacity < size) new_capacity *= 2;
+
+        ArenaBlock *new_block = malloc(sizeof(ArenaBlock) + new_capacity);
+        if (!new_block) return NULL;
+
+        new_block->next = arena->blocks;
+        new_block->capacity = new_capacity;
+        new_block->used = 0;
+        arena->blocks = new_block;
+
+        block = new_block;
+        offset = 0;
     }
 
     void *ptr = (void*)(block->data + offset);
@@ -139,11 +151,11 @@ typedef struct {
 } Slice;
 ```
 
-**InternResult:** When the interner processes a string, it returns this "canonical" handle. It contains the pointer to the unique string in the Arena and an `Entry` which holds a unique integer ID (the Dense ID) and metadata like the token type.
+**InternResult:** This is the canonical handle returned by the interner. `key` points to an arena-allocated `Slice`, and that slice points to the canonical byte sequence. You may create many temporary slices while lexing, but if two slices have the same bytes and length, they resolve to the same interned record. `Entry` stores the Dense ID and optional metadata (for example, token type).
 
 ```c
 typedef struct {
-    void *key;      // Canonical string in the Arena
+    void *key;      // Arena-allocated Slice* (points to canonical bytes)
     Entry *entry;   // Metadata (Dense ID and metadata)
 } InternResult;
 ```
@@ -166,24 +178,40 @@ When we intern an item, we check the Hash Map. If it's already there, we return 
 
 ```c
 // dense_arena_interner.c - Simplified interning loop
-InternResult* intern(DenseArenaInterner *table, Slice *key) {
+InternResult* intern(DenseArenaInterner *interner, Slice *slice, void *meta) {
     // 1. O(L) Hash + O(1) Map Lookup
-    InternResult *existing = hashmap_get(table->hashmap, key);
-    if (existing) return existing;
+    InternResult *found = hashmap_get(
+        interner->hashmap,
+        slice,
+        interner->hash_func,
+        interner->cmp_func
+    );
+    if (found) return found;
 
-    // 2. Not found: Create canonical copy in the Arena
-    char *canonical = arena_alloc(table->arena, key->len + 1);
-    memcpy(canonical, key->ptr, key->len);
-    canonical[key->len] = '\0';
+    // 2. Create stable, arena-owned key and canonical bytes
+    Slice *key_slice = arena_alloc(interner->arena, sizeof(Slice));
+    void *canonical_data = interner->copy_func(interner->arena, slice->ptr, slice->len);
+    key_slice->ptr = canonical_data;
+    key_slice->len = slice->len;
 
     // 3. Assign the next Dense ID
-    InternResult *res = arena_alloc(table->arena, sizeof(InternResult));
-    res->key = canonical;
-    res->entry = arena_alloc(table->arena, sizeof(Entry));
-    res->entry->dense_index = table->dense_index_count++; // Sequential ID
+    InternResult *res = arena_alloc(interner->arena, sizeof(InternResult));
+    Entry *ent = arena_alloc(interner->arena, sizeof(Entry));
+    ent->meta = meta;
+    ent->dense_index = interner->dense_index_count;
+    res->key = key_slice;
+    res->entry = ent;
 
     // 4. Update the map for future O(1) lookups
-    hashmap_put(table->hashmap, key, res);
+    hashmap_put(
+        interner->hashmap,
+        key_slice,
+        res,
+        interner->hash_func,
+        interner->cmp_func
+    );
+
+    interner->dense_index_count++;
     return res;
 }
 ```
@@ -212,7 +240,7 @@ for (size_t i = 0; KEYWORDS[i].word; i++) {
 ```c
 // lexer.c - Identifier scanning
 static void *lexer_lex_identifier(Lexer *lexer, ...) {
-    Slice slice = lexer_make_slice(start, end);
+    Slice slice = lexer_make_slice_from_ptrs(start, end);
 
     // 1. Keyword check (O(L) hashing + O(1) pointer lookup)
     InternResult *kw = intern_peek(lexer->keywords, &slice);
