@@ -25,7 +25,7 @@
       <h2 class="big-title">All <br><span>Projects</span></h2>
       <div class="project-grid">
         {#each projects as project}
-          <a href={project.url} target="_blank" rel="noopener" class="project-card-minimal">
+          <a href={project.url} target={project.url.startsWith('http') ? '_blank' : ''} rel="noopener" class="project-card-minimal">
             <div class="card-header">
               <div class="card-header-left">
                 <div class="project-thumb">{project.thumb}</div>
