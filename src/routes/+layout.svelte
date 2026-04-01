@@ -45,6 +45,8 @@
   const canonicalUrl = $derived(`${page.url.origin}${page.url.pathname}`);
   const ogImageUrl = $derived(`${page.url.origin}/picture.jpg`);
   const isDetailPage = $derived(page.url.pathname.startsWith('/blog/') || page.url.pathname.startsWith('/projects/'));
+  const isBlogDetailPage = $derived(page.url.pathname.startsWith('/blog/'));
+  const isProjectDetailPage = $derived(page.url.pathname.startsWith('/projects/'));
 
   const personJsonLd = $derived(
     JSON.stringify({
@@ -91,7 +93,7 @@
   <script type="application/ld+json">{personJsonLd}</script>
 </svelte:head>
 
-<div class="container">
+<div class="container" class:container-blog-detail={isBlogDetailPage} class:container-project-detail={isProjectDetailPage}>
   <header class="site-header">
     <nav class="dock">
       <a href="/" class="nav-item" data-tooltip="Home" aria-label="Home" title="Home">

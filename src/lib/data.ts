@@ -30,7 +30,7 @@ const TAG_COLORS: Record<string, { color: string; bg: string }> = {
 };
 
 // Helper function to resolve a tag string into an object with inline styles
-function getTagData(name: string) {
+export function getTagData(name: string) {
   const style = TAG_COLORS[name];
   if (style) {
     return { name, style: `color: ${style.color}; background: ${style.bg};` };

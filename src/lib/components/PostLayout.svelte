@@ -1,21 +1,26 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { page } from '$app/state';
+  import { getTagData } from '$lib/data';
   
-  let { title, date, description = '', children } = $props<{
+  let { title, date, description = '', tag, children } = $props<{
     title: string;
     date: string;
     description?: string;
+    tag?: string;
     children: any;
   }>();
 
   let headings = $state<{ id: string; text: string; depth: number }[]>([]);
   let activeId = $state("");
+  let tocLockUntil = 0;
+  let lockedHeadingId: string | null = null;
 
   const canonicalUrl = $derived(`${page.url.origin}${page.url.pathname}`);
   const ogImageUrl = $derived(`${page.url.origin}/picture.jpg`);
   const fullTitle = $derived(`${title} | Aiko Schurmann`);
   const metaDescription = $derived(description || `Research and technical thoughts on ${title} by Aiko Schurmann.`);
+  const tagData = $derived(tag ? getTagData(tag) : undefined);
   const publishedTime = $derived.by(() => {
     const parsedDate = new Date(date);
     if (Number.isNaN(parsedDate.getTime())) return undefined;
@@ -40,9 +45,43 @@
     })
   );
 
+  function handleTocNavigation(event: MouseEvent, headingId: string) {
+    event.preventDefault();
+
+    const heading = document.getElementById(headingId);
+    if (!heading) return;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const headingTopInViewport = heading.getBoundingClientRect().top;
+    const distance = Math.abs(headingTopInViewport);
+    const lockDurationMs = prefersReducedMotion ? 0 : Math.min(1500, Math.max(450, distance * 0.8));
+    const topOffset = 120;
+    const targetY = Math.max(0, window.scrollY + headingTopInViewport - topOffset);
+
+    lockedHeadingId = headingId;
+    tocLockUntil = performance.now() + lockDurationMs;
+
+    window.scrollTo({
+      top: targetY,
+      behavior: prefersReducedMotion ? 'auto' : 'smooth',
+    });
+
+    history.replaceState(null, '', `#${headingId}`);
+    activeId = headingId;
+  }
+
+  function isTocLocked() {
+    if (!lockedHeadingId) return false;
+    if (performance.now() >= tocLockUntil) {
+      lockedHeadingId = null;
+      return false;
+    }
+    return true;
+  }
+
   onMount(() => {
     // 1. Find the main title and all h2/h3 elements
-    const elements = Array.from(document.querySelectorAll('.post-title, .prose h2, .prose h3'));
+    const elements = Array.from(document.querySelectorAll<HTMLElement>('.post-title, .prose h2, .prose h3'));
 
     headings = elements.map((el) => {
       // Create an ID for the heading if markdown didn't automatically generate one
@@ -61,21 +100,46 @@
       };
     });
 
-    // 2. Set up IntersectionObserver to detect which heading is currently on screen
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            activeId = entry.target.id;
-          }
-        });
-      },
-      { rootMargin: '0px 0px -80% 0px' } 
-    );
+    // 2. Track section by scroll position. This is stable in both scroll directions.
+    const activationOffset = 180;
+    const updateActiveHeading = () => {
+      if (elements.length === 0) return;
 
-    elements.forEach((el) => observer.observe(el));
+      if (isTocLocked()) {
+        activeId = lockedHeadingId || activeId;
+        return;
+      }
 
-    return () => observer.disconnect();
+      let currentId = elements[0].id;
+      for (const el of elements) {
+        if (el.getBoundingClientRect().top <= activationOffset) {
+          currentId = el.id;
+        } else {
+          break;
+        }
+      }
+
+      activeId = currentId;
+    };
+
+    let ticking = false;
+    const onScrollOrResize = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        ticking = false;
+        updateActiveHeading();
+      });
+    };
+
+    updateActiveHeading();
+    window.addEventListener('scroll', onScrollOrResize, { passive: true });
+    window.addEventListener('resize', onScrollOrResize);
+
+    return () => {
+      window.removeEventListener('scroll', onScrollOrResize);
+      window.removeEventListener('resize', onScrollOrResize);
+    };
   });
 
   $effect(() => {
@@ -123,6 +187,13 @@
     <header class="post-header">
       <div class="meta">{date}</div>
       <h1 class="post-title" id="introduction">{title}</h1>
+      {#if tagData}
+        <div class="meta-row">
+          <div class="tags-list">
+            <span class="tag" style={tagData.style}>{tagData.name}</span>
+          </div>
+        </div>
+      {/if}
     </header>
 
     <div class="prose">
@@ -150,6 +221,7 @@
               href="#{heading.id}"
               class="toc-link depth-{heading.depth}"
               class:active={activeId === heading.id}
+              onclick={(event) => handleTocNavigation(event, heading.id)}
             >
               {heading.text}
             </a>
@@ -164,9 +236,8 @@
   /* --- CSS Grid Layout --- */
   .post-layout {
     display: grid;
-    /* Widened the 3rd column and increased gap for a more spacious feel */
-    grid-template-columns: 1fr 680px 1.6fr;
-    gap: 4rem;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 680px) minmax(0, 1fr);
+    gap: 2rem;
     align-items: start; 
     max-width: 100%;
   }
@@ -182,6 +253,8 @@
     grid-column: 3;
     position: sticky;
     top: 6rem;
+    width: min(100%, 400px);
+    justify-self: start;
     max-height: calc(100vh - 8rem);
     overflow-y: auto;
     scrollbar-width: none;
@@ -212,6 +285,35 @@
     line-height: 1;
     margin-bottom: 0;
     scroll-margin-top: 10rem;
+  }
+
+  .meta-row {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 1.5rem;
+  }
+
+  .tags-list {
+    display: flex;
+    gap: 0.6rem;
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.35rem 0.8rem;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--fg);
   }
 
   .post-footer {
@@ -293,27 +395,16 @@
 
   .toc-link:hover {
     color: var(--fg);
-    background: rgba(255, 255, 255, 0.03);
   }
 
   .toc-link.active {
     color: var(--accent);
-    border-left-color: var(--accent);
-    background: rgba(59, 130, 246, 0.05);
-  }
-
-  .toc-link.depth-1.active,
-  .toc-link.depth-2.active {
-    font-weight: 700;
-  }
-
-  .toc-link.depth-3.active {
-    color: var(--fg);
-    border-left-color: var(--accent);
+    border-left-color: transparent;
+    background: rgba(59, 130, 246, 0.08);
   }
 
   /* Automatically hide the sidebar and revert to a single column on smaller screens */
-  @media (max-width: 1024px) {
+  @media (max-width: 1200px) {
     .post-layout {
       grid-template-columns: 1fr;
       padding: 0;
