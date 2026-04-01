@@ -186,7 +186,7 @@
   .back-link:hover .back-arrow { transform: translateX(-4px); }
 
   @media (max-width: 1024px) {
-    .post-layout { grid-template-columns: 1fr; padding: 0 1rem; }
+    .post-layout { grid-template-columns: 1fr; padding: 0; }
     .post-container { grid-column: 1; }
   }
 </style>
