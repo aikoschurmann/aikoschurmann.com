@@ -17,7 +17,7 @@ Compilers spend a massive amount of time looking at names and structures. Every 
 
 The problem isn't just matching strings or comparing type signatures—it's doing it **over and over again** across the entire pipeline. The same variable name `counter` might be checked hundreds of times: initially in the lexer, again in the parser, repeatedly in the type checker, and throughout optimization passes.
 
-I implemented a **Dense Arena Interner** to solve this by converting strings and structures into dense integers the moment they are created. We pay the hashing cost upfront during lexing or type construction. In exchange, every subsequent phase of the compiler gets to rely entirely on O(1) array indexing and single-instruction pointer comparisons.
+I implemented a **Dense Arena Interner** to solve this by converting strings and structures into dense integers the moment they are created. We pay the hashing cost upfront during lexing or type construction. In exchange, every subsequent phase of the compiler gets to rely entirely on **O(1)** array indexing and single-instruction pointer comparisons.
 
 Here's the technical journey from repeated, expensive structural checks to hardware-level integer comparisons.
 
@@ -48,7 +48,7 @@ If your language has 50 keywords and the average identifier is 8 characters, you
 
 ## The Hashing Improvement: O(L)
 
-To improve this, we move to a Hash Map. Instead of checking every keyword, we compute a hash of the token and jump directly to the potential match. I use separate chaining with dynamic arrays for buckets. This ensures that even with collisions, performance remains stable.
+To improve this, we move to a Hash Map. Instead of checking every keyword, we compute a hash of the token and jump directly to the potential match. I use separate chaining with dynamic arrays for buckets. This ensures that even with collisions, performance remains stable. Hashing takes **O(L)** per lookup (with average-case **O(1)** bucket access).
 
 ```c
 // hash_map.c - Simplified insertion
@@ -77,6 +77,10 @@ bool hashmap_put(HashMap* map, void* key, void* value) {
 ```
 
 While O(L) is much better than O(N * L), we are still paying the hashing price **every time** we encounter that string in the Parser, Typechecker, or Optimizer. We need a way to phase-shift this cost away from all stages to just the Lexer.
+
+For a symbol reused $k$ times across later passes, the tradeoff is simple: without interning, repeated checks are **O(k * L)**; with interning, you pay **O(k * L)** only in one phase and later passes become **O(k)**.
+
+Interning shifts the cost to one phase, then reuses a canonical handle for nearly constant-time comparisons.
 
 ## The Foundation: Stable Memory (The Arena)
 
@@ -287,7 +291,7 @@ Symbol *scope_lookup_symbol(Scope *scope, InternResult *rec) {
 }
 ```
 
-While this hierarchy works perfectly, other high-performance compilers sometimes use an **Array of Stacks** (where each Dense ID maps to a stack of symbols) or an **Undo Log** (pushing to a global array and rolling back on scope exit). I haven't implemented these yet, but they offer an interesting alternative to tree-walking by keeping the most local symbol at the top of a global structure.
+While this hierarchy works perfectly, other high-performance compilers sometimes use an **Array of Stacks** (where each Dense ID maps to a stack of symbols) or an **Undo Log** (pushing to a global array and rolling back on scope exit). I haven't implemented these yet, but they offer an interesting alternative to tree-walking by keeping the most local symbol at the top of a global structure. The scope walk itself is proportional to nesting depth: **O(h)**.
 
 **2. Memory Efficiency and Cache Locality.** Because the IDs are contiguous, we can store metadata in compact, cache-friendly structures. When the compiler iterates over all symbols, it's performing a linear scan over a contiguous block of memory. This maximizes CPU cache hits and minimizes the memory overhead associated with sparse data structures like Hash Maps.
 
@@ -308,7 +312,7 @@ bool type_compare(Type *a, Type *b) {
 }
 ```
 
-By ensuring that every "child" type is already canonical, the interner can determine if a "parent" type exists without ever walking more than one level deep. Once the type is interned, the rest of the compiler can compare complex signatures as if they were simple integers.
+By ensuring that every "child" type is already canonical, the interner can determine if a "parent" type exists without ever walking more than one level deep. Once the type is interned, the rest of the compiler can compare complex signatures as if they were simple integers. After canonicalization, equality checks behave like constant-time operations: **O(1)**.
 
 ```c
 // The ultimate win: O(1) equality everywhere else

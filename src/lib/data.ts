@@ -102,32 +102,64 @@ export const projects = rawProjects.map(p => ({
   tags: p.tags.map(getTagData)
 }));
 
-// 1. Import the parsed markdown files (to get frontmatter metadata)
-const modules = import.meta.glob('/src/routes/blog/*/+page.md', { eager: true });
-
-// 2. Import the raw markdown text (to count the words)
+// Import raw markdown text for both frontmatter metadata and word-count calculation.
 const rawModules = import.meta.glob('/src/routes/blog/*/+page.md', { query: '?raw', import: 'default', eager: true });
 
-// 3. Map over them to generate the dynamic list
-export const thoughts = Object.entries(modules).map(([path, module]) => {
+function parseFrontmatter(raw: string) {
+  const match = raw.match(/^---\n([\s\S]*?)\n---/);
+  if (!match) return {} as Record<string, unknown>;
+
+  const meta: Record<string, unknown> = {};
+  const lines = match[1].split('\n');
+
+  for (const line of lines) {
+    const pair = line.match(/^([A-Za-z0-9_]+):\s*(.*)$/);
+    if (!pair) continue;
+
+    const key = pair[1];
+    let value = pair[2].trim();
+
+    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1);
+    } else if (value === 'true') {
+      meta[key] = true;
+      continue;
+    } else if (value === 'false') {
+      meta[key] = false;
+      continue;
+    }
+
+    meta[key] = value;
+  }
+
+  return meta;
+}
+
+// Map over raw markdown files to generate the dynamic list.
+export const thoughts = Object.entries(rawModules).map(([path, raw]) => {
   const url = path.replace('/src/routes', '').replace('/+page.md', '');
-  const meta = (module as any).metadata || {};
+  const rawContent = raw as string;
+  const meta = parseFrontmatter(rawContent);
   
-  const rawContent = rawModules[path] as string;
-  const cleanText = rawContent.replace(/<[^>]*>?/gm, '').replace(/[#*_>\[\]]/g, '');
+  const contentWithoutFrontmatter = rawContent.replace(/^---[\s\S]*?---\n?/, '');
+  const cleanText = contentWithoutFrontmatter.replace(/<[^>]*>?/gm, '').replace(/[#*_>\[\]]/g, '');
   const wordCount = cleanText.split(/\s+/).filter(word => word.length > 0).length;
   const readTimeMinutes = Math.max(1, Math.ceil(wordCount / 225));
 
   // Extract the tag name, and pass it through our color resolver
-  const tagName = meta.tag || 'RESEARCH';
+  const tagName = typeof meta.tag === 'string' ? meta.tag : 'RESEARCH';
+  const title = typeof meta.title === 'string' ? meta.title : 'Untitled Thought';
+  const description = typeof meta.description === 'string' ? meta.description : '';
+  const date = typeof meta.date === 'string' ? meta.date : '';
+  const showOnHome = meta.showOnHome !== false;
 
   return {
-    title: meta.title || 'Untitled Thought',
+    title,
     url,
-    description: meta.description || '',
-    date: meta.date || '',
+    description,
+    date,
     readTime: `${readTimeMinutes} MIN READ`,
     tag: getTagData(tagName),
-    showOnHome: meta.showOnHome !== false 
+    showOnHome
   };
 }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());

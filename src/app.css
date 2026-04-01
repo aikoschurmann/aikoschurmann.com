@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400;500;600;700&display=swap');
+@import 'katex/dist/katex.min.css';
 
 :root {
   --font-sans: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
@@ -468,6 +469,12 @@ nav.dock {
   border-radius: 4px;
 }
 .prose pre code { background: transparent; padding: 0; }
+
+.prose .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.25rem 0;
+}
 
 footer {
   margin-top: 8rem;

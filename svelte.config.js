@@ -2,12 +2,16 @@ import { mdsvex, escapeSvelte } from 'mdsvex';
 import adapter from '@sveltejs/adapter-cloudflare';
 import { relative, sep, resolve } from 'node:path';
 import { createHighlighter } from 'shiki';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 
 let highlighter;
 
 /** @type {import('mdsvex').MdsvexOptions} */
 const mdsvexOptions = {
 	extensions: ['.svx', '.md'],
+	remarkPlugins: [remarkMath],
+	rehypePlugins: [rehypeKatex],
 	layout: {
 		blog: resolve(import.meta.dirname, './src/lib/components/PostLayout.svelte')
 	},
