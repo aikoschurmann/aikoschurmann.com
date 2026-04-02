@@ -101,7 +101,6 @@ function getReadingStats(rawContent: string) {
   const proseWords = countWords(proseSource);
   const codeWords = countWords(codeSource);
 
-  // Code examples matter for reading time, but they are typically scanned faster than prose.
   const effectiveWords = proseWords + Math.round(codeWords * 0.35);
   const readMinutes = Math.max(1, Math.ceil(effectiveWords / 225));
 
@@ -118,8 +117,7 @@ function slugToTitle(slug: string): string {
 type CourseMeta = {
   title?: string;
   description?: string;
-  level?: string;
-  tag?: string;
+  tags?: string[];
 };
 
 type SectionMeta = {
@@ -137,11 +135,17 @@ function normalizeCourseMeta(value: unknown): CourseMeta {
   const obj = asObject(value);
   if (!obj) return {};
 
+  let tags: string[] | undefined;
+  if (Array.isArray(obj.tags)) {
+    tags = obj.tags.filter((t) => typeof t === 'string') as string[];
+  } else if (typeof obj.tag === 'string') {
+    tags = [obj.tag];
+  }
+
   return {
     title: typeof obj.title === 'string' ? obj.title : undefined,
     description: typeof obj.description === 'string' ? obj.description : undefined,
-    level: typeof obj.level === 'string' ? obj.level : undefined,
-    tag: typeof obj.tag === 'string' ? obj.tag : undefined
+    tags
   };
 }
 
@@ -210,7 +214,6 @@ function getCoursePathMeta(url: string) {
   };
 }
 
-// Map over raw markdown files to generate the dynamic list.
 export const thoughts = Object.entries(rawModules).map(([path, raw]) => {
   const url = path.replace('/src/routes', '').replace('/+page.md', '');
   const rawContent = raw as string;
@@ -248,7 +251,6 @@ export const thoughts = Object.entries(rawModules).map(([path, raw]) => {
   };
 }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-// Posts stay addressable for courses even when excluded from blog listings.
 export const blogThoughts = thoughts.filter((thought) => thought.showInBlog);
 
 export type Thought = (typeof thoughts)[number];
@@ -274,8 +276,7 @@ export type Course = {
   slug: string;
   title: string;
   description: string;
-  level: string;
-  tag: string;
+  tags: ReturnType<typeof getTagData>[];
   sections: CourseSection[];
   posts: CoursePost[];
   postCount: number;
@@ -324,8 +325,9 @@ export const courses: Course[] = Array.from(courseBuckets.entries())
     const courseMeta = courseMetaBySlug.get(slug);
 
     const title = courseMeta?.title || slugToTitle(slug);
-    const level = slug.includes('101') ? 'BEGINNER TO INTERMEDIATE' : 'INTERMEDIATE';
-    const courseTag = courseMeta?.tag || 'COMPILERS';
+    
+    const rawTags = courseMeta?.tags && courseMeta.tags.length > 0 ? courseMeta.tags : ['COMPILERS'];
+    const courseTags = rawTags.map(getTagData);
 
     const sectionMap = new Map<
       string,
@@ -404,8 +406,7 @@ export const courses: Course[] = Array.from(courseBuckets.entries())
       slug,
       title,
       description,
-      level: courseMeta?.level || level,
-      tag: courseTag,
+      tags: courseTags,
       sections,
       posts,
       postCount: posts.length,

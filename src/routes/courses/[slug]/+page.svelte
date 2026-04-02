@@ -6,8 +6,6 @@
 
   let { data } = $props<{ data: PageData }>();
   const course = $derived(data.course);
-  const courseTag = $derived(getTagData(course.tag));
-  const levelTag = $derived(getTagData(course.level));
   const canonicalUrl = $derived(`${page.url.origin}${page.url.pathname}`);
   const collapsedSections = $state<Record<number, boolean>>({});
 
@@ -38,8 +36,9 @@
     <section id="course-overview">
       <h2 class="big-title">{course.title.split(' ')[0]} <br><span>{course.title.split(' ').slice(1).join(' ')}</span></h2>
       <div class="course-meta-row">
-        <span class="course-meta-item course-meta-topic" style={courseTag.style}>{courseTag.name}</span>
-        <span class="course-meta-item course-meta-level" style={levelTag.style}>{levelTag.name}</span>
+        {#each course.tags as tag}
+          <span class="course-meta-item course-meta-topic" style={tag.style}>{tag.name}</span>
+        {/each}
         <span class="course-meta-item course-meta-count">{course.postCount} {course.postCount === 1 ? 'chapter' : 'chapters'}</span>
       </div>
       <p class="hero-desc">{course.description}</p>
@@ -53,17 +52,20 @@
           {@const isCollapsed = !!collapsedSections[section.index]}
           <section class="course-section" id={`section-${section.index}`}>
             <div class="course-section-header">
+            
               <h4 class="course-section-title">
                 <span class="section-title-text">{section.title}</span>
               </h4>
               <div class="section-header-top">
                 <span class="section-kicker">Section {section.index}</span>
                 <div class="section-header-controls">
+                
                   <span class="section-stats">{section.postCount} {section.postCount === 1 ? 'chapter' : 'chapters'}</span>
                   <button
                     type="button"
                     class="section-toggle"
                     class:collapsed={isCollapsed}
+            
                     aria-expanded={!isCollapsed}
                     aria-label={isCollapsed ? `Expand ${section.title}` : `Collapse ${section.title}`}
                     onclick={() => toggleSection(section.index)}
@@ -77,6 +79,7 @@
             </div>
 
             {#if !isCollapsed}
+    
               {#if section.description}
                 <p class="course-section-desc">{section.description}</p>
               {/if}
@@ -84,6 +87,7 @@
               <div class="course-post-list">
                 {#each section.posts as post}
                   <a class="course-chapter-link" id={`chapter-${post.part}`} href={`${post.url}?course=${course.slug}&part=${post.part}`}>
+   
                     <div class="chapter-top">
                       <span class="chapter-index">CH {post.part}</span>
                       <span class="chapter-title">{post.chapterTitle ?? post.title}</span>
@@ -91,6 +95,7 @@
                     <p class="chapter-desc">{post.description}</p>
                     <div class="chapter-meta">
                       <span class="chapter-tag" style={post.tag.style}>{post.tag.name}</span>
+              
                       <span class="chapter-read-time">{post.readTime}</span>
                     </div>
                   </a>
@@ -98,6 +103,7 @@
               </div>
             {/if}
           </section>
+ 
         {/each}
       </div>
     </section>
@@ -120,13 +126,6 @@
     letter-spacing: 0.05em;
     text-transform: uppercase;
     color: var(--fg-muted);
-  }
-
-  .course-meta-level {
-    padding: 0.3rem 0.52rem;
-    border-radius: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    white-space: nowrap;
   }
 
   .course-meta-topic {

@@ -64,13 +64,16 @@
 
 	const svgWidth = $derived.by(() => Math.max(760, dfaConfig.states.length * 160));
 	const svgHeight = $derived.by(() => (dfaConfig.states.length > 7 ? 420 : 340));
+
 	const nodeRadius = 27;
 
 	let sourceInput = $state('abbb');
 	let consumedInput = $state<string[]>([]);
 	let remainingInput = $state<string[]>([]);
 	let currentState = $state('');
-	let runResult = $state<'idle' | 'accepted' | 'rejected'>('idle');
+
+	let runResult: 'idle' | 'accepted' | 'rejected' = $state('idle');
+	
 	let history = $state<string[]>([]);
 	let lastTransition = $state<{ from: string; to: string; symbol: string } | null>(null);
 	let dfaText = $state(JSON.stringify(DEFAULT_DFA, null, 2));
@@ -211,6 +214,7 @@
 		}
 
 		const symbol = remainingInput[0];
+
 		if (!dfaConfig.alphabet.includes(symbol)) {
 			consumedInput = [...consumedInput, symbol];
 			remainingInput = remainingInput.slice(1);
@@ -221,15 +225,18 @@
 		consume(symbol);
 	}
 
+	// FIX: Refactored to avoid TypeScript narrowing issues
 	function runAll(): void {
-		if (runResult === 'accepted' || runResult === 'rejected') return;
+		if (runResult !== 'idle') return;
 
-		while (remainingInput.length > 0 && runResult !== 'rejected') {
+		while (remainingInput.length > 0) {
 			step();
-			if (runResult === 'accepted' || runResult === 'rejected') break;
+			// Cast to string locally so TS doesn't falsely assume it's still strictly "idle"
+			const status = runResult as string;
+			if (status === 'accepted' || status === 'rejected') break;
 		}
 
-		if (remainingInput.length === 0 && runResult === 'idle') {
+		if (remainingInput.length === 0 && (runResult as string) === 'idle') {
 			runResult = isAccepting(currentState) ? 'accepted' : 'rejected';
 		}
 	}
@@ -251,6 +258,7 @@
 
 	function edgeIsActive(edge: Edge): boolean {
 		if (!lastTransition) return false;
+
 		if (edge.from !== lastTransition.from || edge.to !== lastTransition.to) return false;
 		return edge.label.split(',').includes(lastTransition.symbol);
 	}
@@ -264,6 +272,7 @@
 		if (edge.self) {
 			const loopSpan = 18;
 			const loopRise = 40;
+
 			return [
 				`M ${from.x - loopSpan} ${from.y - nodeRadius + 1}`,
 				`C ${from.x - 34} ${from.y - nodeRadius - loopRise}, ${from.x + 34} ${from.y - nodeRadius - loopRise}, ${from.x + loopSpan} ${from.y - nodeRadius + 1}`
@@ -273,6 +282,7 @@
 		const dx = to.x - from.x;
 		const dy = to.y - from.y;
 		const distance = Math.hypot(dx, dy) || 1;
+
 		const ux = dx / distance;
 		const uy = dy / distance;
 
@@ -285,8 +295,10 @@
 		const my = (startY + endY) / 2;
 		const perpX = -uy;
 		const perpY = ux;
+
 		const curve = edge.bidirectional ? 26 : 0;
 		const direction = edge.from < edge.to ? 1 : -1;
+
 		const cx = mx + perpX * curve * direction;
 		const cy = my + perpY * curve * direction;
 
@@ -318,6 +330,7 @@
 		const my = (startY + endY) / 2;
 		const perpX = -uy;
 		const perpY = ux;
+
 		const curve = edge.bidirectional ? 26 : 0;
 		const direction = edge.from < edge.to ? 1 : -1;
 
@@ -332,16 +345,19 @@
 		try {
 			const parsed = JSON.parse(dfaText) as DFAConfig;
 			const normalized = normalizeDFA(parsed);
+
 			if (!normalized) {
 				dfaError = 'Invalid DFA: check states, start state, accepting states, and transition targets.';
 				return;
 			}
 
 			dfaConfig = normalized;
+
 			const example = normalized.alphabet.length <= 2 && normalized.alphabet.every((s) => s.length === 1)
 				? normalized.alphabet.join('').repeat(2)
 				: normalized.alphabet.join(' ');
 			reset(example);
+
 		} catch {
 			dfaError = 'Could not parse JSON. Check commas, quotes, and braces.';
 		}
