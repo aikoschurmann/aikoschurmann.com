@@ -78,10 +78,10 @@
     const heading = document.getElementById(headingId);
     if (!heading) return;
 
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const prefers_reduced_motion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const headingTopInViewport = heading.getBoundingClientRect().top;
     const distance = Math.abs(headingTopInViewport);
-    const lockDurationMs = prefersReducedMotion ? 0 : Math.min(1500, Math.max(450, distance * 0.8));
+    const lockDurationMs = prefers_reduced_motion ? 0 : Math.min(1500, Math.max(450, distance * 0.8));
     const topOffset = 120;
     const targetY = Math.max(0, window.scrollY + headingTopInViewport - topOffset);
 
@@ -90,7 +90,7 @@
 
     window.scrollTo({
       top: targetY,
-      behavior: prefersReducedMotion ? 'auto' : 'smooth',
+      behavior: prefers_reduced_motion ? 'auto' : 'smooth',
     });
 
     const url = new URL(window.location.href);
@@ -179,13 +179,13 @@
     const shouldRecenter = linkCenter < upperBound || linkCenter > lowerBound;
     if (!shouldRecenter) return;
 
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const prefers_reduced_motion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const centeredTop = activeLink.offsetTop - (tocListEl.clientHeight - activeLink.offsetHeight) / 2;
     const clampedTop = Math.max(0, Math.min(centeredTop, tocListEl.scrollHeight - tocListEl.clientHeight));
 
     tocListEl.scrollTo({
       top: clampedTop,
-      behavior: prefersReducedMotion ? 'auto' : behavior
+      behavior: prefers_reduced_motion ? 'auto' : behavior
     });
   }
 
@@ -319,30 +319,43 @@
     <div class="post-footer">
       {#if courseContext}
         <div class="course-reading-nav">
-          <a href={`/courses/${courseContext.slug}`} class="back-link">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
-            </svg>
-            Back to course
-          </a>
+          <div class="nav-row-main">
+            <div class="nav-slot">
+              {#if courseContext.prev}
+                <a class="course-step-link" href={`${courseContext.prev.url}?course=${courseContext.slug}&part=${courseContext.prev.part}`}>
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"/>
+                  </svg>
+                  Previous chapter
+                </a>
+              {/if}
+            </div>
 
-          <div class="course-progress-chip">Part {courseContext.currentPart} / {courseContext.totalParts}</div>
+            <div class="course-progress-chip">Part {courseContext.currentPart} / {courseContext.totalParts}</div>
 
-          <div class="course-step-links">
-            {#if courseContext.prev}
-              <a class="course-step-link" href={`${courseContext.prev.url}?course=${courseContext.slug}&part=${courseContext.prev.part}`}>
-                Previous chapter
-              </a>
-            {/if}
-            {#if courseContext.next}
-              <a class="course-step-link" href={`${courseContext.next.url}?course=${courseContext.slug}&part=${courseContext.next.part}`}>
-                Next chapter
-              </a>
-            {/if}
+            <div class="nav-slot next-slot">
+              {#if courseContext.next}
+                <a class="course-step-link" href={`${courseContext.next.url}?course=${courseContext.slug}&part=${courseContext.next.part}`}>
+                  Next chapter
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                </a>
+              {/if}
+            </div>
+          </div>
+
+          <div class="nav-row-bottom">
+            <a href={`/courses/${courseContext.slug}`} class="back-link">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+              </svg>
+              Back to course
+            </a>
           </div>
         </div>
       {:else}
-        <a href="/blog" class="back-link">
+        <a href="/blog" class="back-link thoughts-back">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
           </svg>
@@ -485,10 +498,34 @@
 
   .course-reading-nav {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    gap: 0.65rem;
+    gap: 0.4rem;
+    width: 100%;
+  }
+
+  .nav-row-main {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 1.5rem;
+    width: 100%;
+  }
+
+  .nav-slot {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .nav-slot.next-slot {
+    justify-content: flex-start;
+  }
+
+  .nav-row-bottom {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 1.25rem;
   }
 
   .course-progress-chip {
@@ -504,14 +541,8 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  .course-step-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
   .course-step-link {
-    padding: 0.35rem 0.6rem;
+    padding: 0.4rem 0.8rem;
     border-radius: 6px;
     font-size: 0.65rem;
     font-weight: 700;
@@ -522,27 +553,35 @@
     text-decoration: none;
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: background 0.2s ease, border-color 0.2s ease;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
   }
 
   .course-step-link:hover {
     background: rgba(255, 255, 255, 0.08);
     border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
   }
 
   .back-link {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
     text-decoration: none;
     color: var(--fg-muted);
     font-size: 0.9rem;
     font-weight: 500;
     transition: all 0.2s ease;
+    position: relative;
   }
 
   .back-link svg {
     color: var(--accent);
+    position: absolute;
+    right: calc(100% + 0.75rem);
+    transition: transform 0.2s ease;
   }
 
   .back-link:hover {
@@ -551,6 +590,14 @@
 
   .back-link:hover svg {
     transform: translateX(-4px);
+  }
+
+  /* Specific handling for thoughts back link to maintain standard flow if needed */
+  .thoughts-back {
+    gap: 0.75rem;
+  }
+  .thoughts-back svg {
+    position: static;
   }
 
   /* --- TOC Typography --- */

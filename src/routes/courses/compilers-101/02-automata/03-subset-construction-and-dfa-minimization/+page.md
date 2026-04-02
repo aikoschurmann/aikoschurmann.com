@@ -26,108 +26,143 @@ By the end of this chapter, you should be able to:
 
 ## 4.2 From Regex to NFA: Thompson's Construction
 
-As we saw in Chapter 3, regular expressions are convenient for humans, but machines need finite automata for execution. Thompson's construction is the bridge. It provides a systematic, compositional recipe for building an NFA from any regular expression.
+Regular expressions are a human-friendly notation, but machines need a graph-based representation to "run" a pattern. **Thompson's Construction** is the standard algorithm for bridging this gap. It is a compositional recipe: it defines how to build an NFA for the simplest possible patterns, and then defines how to "glue" those fragments together to match complex expressions.
 
-### 4.2.1 The Compositional Property
+### 4.2.1 The Thompson Fragment
 
-The key property of Thompson's construction is that each regular expression operator corresponds to a simple way of combining NFA fragments. Each fragment has exactly one start state and one accepting state.
+Every NFA fragment produced by this construction follows three strict rules:
+1. It has exactly one **start state**.
+2. It has exactly one **accepting state**.
+3. No transitions enter the start state, and no transitions leave the accepting state.
 
-### 4.2.2 Base Cases
+This uniformity is what makes the algorithm simple to implement: we can treat every sub-expression as a "black box" with one input and one output.
 
-**epsilon** — $\epsilon$:
+### 4.2.2 Base Cases: Literals and Epsilon
 
-Create a fragment with two states, $q_S$ and $q_A$, and one transition $q_S \xrightarrow{\epsilon} q_A$. That transition consumes no input, so the machine can accept immediately.
+The base cases are the building blocks.
 
+**Epsilon** — $\epsilon$:
+To match the empty string, we move from start to accept without consuming any input.
 <ThompsonEmbed mode="epsilon" />
 
+**Symbol literal** — $a$:
+To match a single symbol, we create two states and a transition between them labeled with that symbol.
+<ThompsonEmbed mode="literal" />
 
-### 4.2.3 Inductive Steps
 
-**Union** — $r \mid s$:
+### 4.2.3 Inductive Steps: Gluing Fragments Together
 
-Create fresh wrapper states $q_S$ and $q_A$. Add $\epsilon$ transitions $q_S \to r_S$ and $q_S \to s_S$ so execution can branch into either fragment. Then add $\epsilon$ transitions $r_A \to q_A$ and $s_A \to q_A$ so both branches merge into one accepting state.
+Complex regexes are built using three main operators: Union, Concatenation, and Kleene Star.
 
+#### Union ($r \mid s$)
+To match *either* pattern $r$ or pattern $s$, we create a new start state that branches into both fragments using $\epsilon$-transitions. When either fragment finished, they both move to a shared accepting state.
+**Why it works**: The machine "guesses" which path to take. If either path leads to an acceptance, the whole union accepts.
 <ThompsonEmbed mode="union" />
 
-**Concatenation** — $rs$:
-
-Connect the two fragments in sequence by merging $r_A$ with $s_S$, or by adding an $\epsilon$ transition $r_A \to s_S$. The combined fragment starts at $r_S$ and accepts at $s_A$.
-
+#### Concatenation ($rs$)
+To match $r$ followed by $s$, we simply point the accepting state of $r$ to the start state of $s$ using an $\epsilon$-transition (or by merging the two states).
+**Why it works**: You cannot start matching $s$ until you have successfully finished matching $r$.
 <ThompsonEmbed mode="concat" />
 
-**Kleene star** — $r^*$:
-
-Create fresh wrapper states $q_S$ and $q_A$. Add $\epsilon$ transitions $q_S \to q_A$ (zero copies) and $q_S \to r_S$ (start one copy). From $r_A$, add $\epsilon$ transitions $r_A \to r_S$ (repeat) and $r_A \to q_A$ (stop).
+#### Kleene Star ($r^*$)
+The star is the most complex. We need to support matching $r$ zero times, one time, or many times.
+1. **Zero times**: An $\epsilon$-transition goes directly from the new start to the new accept.
+2. **Repeat**: An $\epsilon$-transition goes from the end of $r$ back to the start of $r$.
 
 <ThompsonEmbed mode="star" />
 
 
 ## 4.3 From NFA to DFA: The Subset Construction
 
-While Thompson's construction is efficient (producing an NFA with $O(|r|)$ states), NFAs are slower to simulate because they can be in multiple states at once. The **subset construction** (or powerset construction) converts an NFA into an equivalent DFA.
+While Thompson's algorithm is fast, the resulting NFA is slow to run because it can be in many states at once. We need to convert it into a DFA, where we are always in exactly **one** state.
 
-### 4.3.1 The Core Idea
+The **Subset Construction** (also called Powerset Construction) does this by creating a DFA where each "state" actually represents a *set* of NFA states.
 
-The DFA tracks the *set* of all states the NFA could possibly be in after reading a given prefix. Since an NFA with $n$ states has $2^n$ possible subsets of states, the resulting DFA has a finite (though potentially large) number of states.
+### 4.3.1 The Core Operations
 
-### 4.3.2 The Algorithm
+To understand the algorithm, we need two primitive operations:
 
-**Input**: NFA $N = (Q_N, \Sigma, \Delta, q_0, F_N)$  
-**Output**: DFA $D = (Q_D, \Sigma, \delta, S_0, F_D)$
+1. **$\epsilon$-closure($S$)**: The set of all NFA states reachable from set $S$ using *only* $\epsilon$-transitions. You can think of this as "where can I go for free?"
+2. **move($S, a$)**: The set of all NFA states reachable from set $S$ by consuming exactly one symbol $a$.
 
-1. **Start state**: $S_0 = E(\{q_0\})$, where $E(S)$ is the $\epsilon$-closure.
-2. **Worklist**: $Q_D = \{S_0\}$, and keep a list of "unmarked" states.
-3. **Loop**: While there is an unmarked state $S \in Q_D$:
-   - Mark $S$.
-   - For each symbol $a \in \Sigma$:
-     - Compute $T = E(\bigcup_{q \in S} \Delta(q, a))$.
-     - If $T \notin Q_D$, add $T$ to $Q_D$ as an unmarked state.
-     - Set $\delta(S, a) = T$.
-4. **Accepting states**: $F_D = \{S \in Q_D \mid S \cap F_N \neq \emptyset\}$.
+### 4.3.2 The Algorithm Walkthrough
 
-### 4.3.3 Worked Example
+The Subset Construction converts an NFA $N$ into an equivalent DFA $D$. Since a DFA state is defined by a *set* of NFA states, we build the transition table by exploring all reachable subsets.
 
-Convert the NFA for `(a|b)*ab` to a DFA.
+**The Procedure**:
+1. **Compute the Start State**: The DFA start state $S_0$ is the $\epsilon$-closure of the NFA start state.
+2. **Initialize Worklist**: Add $S_0$ to a queue of "unvisited" DFA states.
+3. **Explore Transitions**: While the worklist isn't empty:
+   - Pop a DFA state $S$.
+   - For every symbol $a$ in the alphabet:
+     - Apply **move($S, a$)** to see where the NFA can go.
+     - Compute the **$\epsilon$-closure** of that result to get a target set $T$.
+     - If $T$ is a set we haven't seen before, add it to our worklist as a **new DFA state**.
+     - Record the transition in the DFA: from state $S$, symbol $a$ lands in state $T$.
 
-NFA states: $\{q_0, q_1, q_2\}$ where $q_0$ is start and $q_2$ is accepting.
 
-| DFA state | On `a` | On `b` |
-|-----------|--------|--------|
-| $A: \{q_0\}$ | $\{q_0, q_1\} (B)$ | $\{q_0\} (A)$ |
-| $B: \{q_0, q_1\}$ | $\{q_0, q_1\} (B)$ | $\{q_0, q_2\} (C)$ |
-| $C: \{q_0, q_2\}$ | $\{q_0, q_1\} (B)$ | $\{q_0\} (A)$ |
+### 4.3.3 Worked Example: `(a|b)*ab`
 
-Accepting states: Any set containing $q_2$, which is just $C$.
+Let's trace the construction for an NFA that accepts strings ending in `ab`. 
+NFA States: $\{q_0, q_1, q_2\}$. Start: $q_0$. Accept: $q_2$.
+
+#### Step 1: Initialize
+The DFA start state $A$ is the $\epsilon$-closure of $\{q_0\}$. Since there are no $\epsilon$-transitions, $A = \{q_0\}$.
+
+#### Step 2: Expand State A ($ \{q_0\} $)
+- **On symbol `a`**: 
+  - $move(\{q_0\}, a) = \{q_0, q_1\}$
+  - $E(\{q_0, q_1\}) = \{q_0, q_1\}$. This is new! Let's call it **State B**.
+- **On symbol `b`**: 
+  - $move(\{q_0\}, b) = \{q_0\}$
+  - $E(\{q_0\}) = \{q_0\}$. This is just **State A** again.
+
+#### Step 3: Expand State B ($ \{q_0, q_1\} $)
+- **On symbol `a`**:
+  - $move(\{q_0, q_1\}, a) = \{q_0, q_1\}$ (from $q_0 \to \{q_0, q_1\}$ and $q_1 \to \emptyset$)
+  - $E(\{q_0, q_1\}) = \{q_0, q_1\}$. Still **State B**.
+- **On symbol `b`**:
+  - $move(\{q_0, q_1\}, b) = \{q_0, q_2\}$ (from $q_0 \to \{q_0\}$ and $q_1 \to \{q_2\}$)
+  - $E(\{q_0, q_2\}) = \{q_0, q_2\}$. New state! Let's call it **State C**.
+
+#### Step 4: Expand State C ($ \{q_0, q_2\} $)
+- **On symbol `a`**: $move \to \{q_0, q_1\} \xrightarrow{E} \{q_0, q_1\}$ (**State B**).
+- **On symbol `b`**: $move \to \{q_0, q_2\} \xrightarrow{E} \{q_0, q_2\}$ (**State C**).
+
+**Resulting DFA**:
+The table is now complete. States B and C are accepting because they both contain the NFA's accepting state $q_2$.
 
 <SubsetConstructionEmbed mode="graph" />
 
 
 ## 4.4 DFA Minimization
 
-A DFA produced by subset construction often contains redundant states. Two states are **indistinguishable** if for every possible future string $w$, both states lead to either an accepting state or both lead to a rejecting state.
+The Subset Construction often produces more states than necessary. For example, it might create two different states that behave exactly the same way for every possible future input. **Minimization** merges these redundant states.
 
-### 4.4.1 Partitioning Algorithm
+### 4.4.1 The Partitioning Method
 
-1. Start with two partitions: $P_1 = F$ (accepting) and $P_2 = Q \setminus F$ (rejecting).
-2. For each partition $P_i$:
-   - Split $P_i$ into smaller groups such that states in the same group move to the same partitions for every symbol $a \in \Sigma$.
-3. Repeat step 2 until no more splits occur.
-4. Each final group becomes a single state in the minimized DFA.
+The most common algorithm works by "splitting" states into groups:
 
-### 4.4.2 Why Minimization Matters
+1. **Initial Split**: Separate all states into two groups: **Accepting** and **Non-Accepting**.
+2. **Refine**: For each group, check if all states in that group go to the *same target groups* for every symbol.
+   - If State 1 goes to Group A on 'x', but State 2 goes to Group B on 'x', then State 1 and 2 are different. **Split them**.
+3. **Finalize**: Repeat until no more splits are possible. Each remaining group becomes a single state in the final DFA.
 
-In a production compiler, the lexer DFA can have hundreds of states. Minimization reduces the memory footprint of the transition table, which is critical for cache performance during scanning.
+### 4.4.2 Why it Matters
+A minimized DFA is the "gold standard" for lexical analysis. It is:
+- **Fast**: Exactly one array lookup per character.
+- **Small**: Uses the minimum possible memory.
+- **Predictable**: No matter how complex the regex, the execution time is strictly linear to the input length.
 
 
 ## 4.5 Chapter Summary
 
-This chapter detailed the two primary algorithms that power lexer generators:
+This chapter explored the transition from theory to implementation:
+- **Thompson's Construction** turns Regex into NFA using a simple "Lego-brick" approach.
+- **Subset Construction** eliminates the "guessing" of NFAs by tracking all possibilities simultaneously, creating a DFA.
+- **Minimization** cleans up the result, producing the most efficient possible recognizer.
 
-- **Thompson's Construction**: A compositional approach to turn regex into NFAs.
-- **Subset Construction**: A way to turn nondeterministic machines into deterministic ones, enabling $O(1)$ transitions per character.
-- **Minimization**: Ensuring the resulting DFA is as small as possible.
-
-In Chapter 5, we will take these minimized DFAs and look at how they are actually implemented in code—moving from mathematical tuples to high-performance C or Zig scanners.
+In the next chapter, we will see how these minimized DFAs are transformed into actual source code (like Zig or C) to build a high-performance lexer.
 
 
 ## 4.6 Exercises

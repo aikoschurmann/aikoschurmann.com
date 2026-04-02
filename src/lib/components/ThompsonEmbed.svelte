@@ -1,5 +1,5 @@
 <script lang="ts">
-	type Mode = 'union' | 'concat' | 'star' | 'epsilon';
+	type Mode = 'union' | 'concat' | 'star' | 'epsilon' | 'literal';
 
 	type Node = {
 		id: string;
@@ -34,6 +34,14 @@
 	};
 
 	const DIAGRAMS: Record<Mode, Diagram> = {
+		literal: {
+			nodes: [
+				{ id: 'qStart', label: 'qS', x: 250, y: 112, start: true },
+				{ id: 'qAccept', label: 'qA', x: 410, y: 112, accept: true }
+			],
+			edges: [{ from: 'qStart', to: 'qAccept', label: 'a', highlight: true }],
+			fragments: []
+		},
 		epsilon: {
 			nodes: [
 				{ id: 'qStart', label: 'qS', x: 250, y: 112, start: true },
@@ -77,18 +85,18 @@
 		},
 		star: {
 			nodes: [
-				{ id: 'qStart', label: 'qS', x: 90, y: 112, start: true },
-				{ id: 'rStart', label: 'rS', x: 270, y: 112 },
-				{ id: 'rAccept', label: 'rA', x: 410, y: 112 },
+				{ id: 'qStart', label: 'qS', x: 100, y: 112, start: true },
+				{ id: 'rStart', label: 'rS', x: 260, y: 112 },
+				{ id: 'rAccept', label: 'rA', x: 400, y: 112 },
 				{ id: 'qAccept', label: 'qA', x: 560, y: 112, accept: true }
 			],
 			edges: [
 				{ from: 'qStart', to: 'rStart', label: 'e', highlight: true, curve: 0 },
-				{ from: 'qStart', to: 'qAccept', label: 'e', highlight: true, curve: -120, labelDy: 48 },
-				{ from: 'rAccept', to: 'rStart', label: 'e', highlight: true, curve: -64 },
+				{ from: 'qStart', to: 'qAccept', label: 'e', highlight: true, curve: -120, labelDy: 42 },
+				{ from: 'rAccept', to: 'rStart', label: 'e', highlight: true, curve: -64, labelDy: 10 },
 				{ from: 'rAccept', to: 'qAccept', label: 'e', highlight: true, curve: 0 }
 			],
-			fragments: [{ x: 224, y: 74, width: 234, height: 76, label: 'NFA(r)' }]
+			fragments: [{ x: 214, y: 74, width: 232, height: 76, label: 'NFA(r)' }]
 		}
 	};
 
@@ -96,7 +104,7 @@
 
 	const mode = $derived.by<Mode>(() => {
 		const candidate = props.mode;
-		if (candidate === 'union' || candidate === 'concat' || candidate === 'star' || candidate === 'epsilon') {
+		if (candidate === 'union' || candidate === 'concat' || candidate === 'star' || candidate === 'epsilon' || candidate === 'literal') {
 			return candidate;
 		}
 		return 'union';
@@ -209,7 +217,7 @@
 				class:edge-active={edge.highlight}
 				marker-end={edge.highlight ? `url(#${markerId}-arrow-active)` : `url(#${markerId}-arrow)`}
 			/>
-			<text x={labelPos.x} y={labelPos.y} class="edge-label" text-anchor="middle">{edge.label}</text>
+			<text x={labelPos.x} y={labelPos.y} class:edge-label-e={edge.label === 'e'} class="edge-label" text-anchor="middle">{edge.label === 'e' ? 'ε' : edge.label}</text>
 		{/each}
 
 		{#each current.nodes as node}
@@ -281,6 +289,12 @@
 		stroke: rgba(8, 8, 8, 0.75);
 		stroke-width: 2.5;
 		stroke-linejoin: round;
+	}
+
+	.edge-label-e {
+		font-family: var(--font-serif);
+		font-style: italic;
+		font-size: 15px;
 	}
 
 	.start-arrow {
