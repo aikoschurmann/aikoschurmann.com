@@ -14,7 +14,7 @@
 </script>
 
 <svelte:head>
-  <title>{course.title} | Aiko Schurmann</title>
+  <title>{course.title} | Course</title>
   <meta name="description" content={course.description} />
 </svelte:head>
 

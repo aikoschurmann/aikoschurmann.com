@@ -19,8 +19,8 @@
 
   const canonicalUrl = $derived(`${page.url.origin}${page.url.pathname}`);
   const ogImageUrl = $derived(`${page.url.origin}/picture.jpg`);
-  const fullTitle = $derived(`${title} | Aiko Schurmann`);
-  const metaDescription = $derived(description || `Research and technical thoughts on ${title} by Aiko Schurmann.`);
+  const fullTitle = $derived(`${title} | Systems Notes`);
+  const metaDescription = $derived(description || `Research and technical notes on ${title}.`);
   const tagData = $derived(tag ? getTagData(tag) : undefined);
   const displayDate = $derived.by(() => {
     const parsed = new Date(date);

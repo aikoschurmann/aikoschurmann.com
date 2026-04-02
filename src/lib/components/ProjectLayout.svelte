@@ -6,7 +6,7 @@
 
   const project = $derived(projects.find(p => p.url === page.url.pathname));
   const title = $derived(project?.title || "");
-  const description = $derived(project?.description || 'Systems project by Aiko Schurmann.');
+  const description = $derived(project?.description || 'Systems project overview and implementation notes.');
   const github = $derived(project?.github || "");
   const tags = $derived(project?.tags || []);
   const research = $derived(project?.research || []);
@@ -25,7 +25,7 @@
   );
   const canonicalUrl = $derived(`${page.url.origin}${page.url.pathname}`);
   const ogImageUrl = $derived(`${page.url.origin}/picture.jpg`);
-  const fullTitle = $derived(`${title} | Aiko Schurmann`);
+  const fullTitle = $derived(`${title} | Project`);
 
   const projectJsonLd = $derived(
     JSON.stringify({

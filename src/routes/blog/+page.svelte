@@ -14,7 +14,7 @@
 </script>
 
 <svelte:head>
-  <title>Aiko Schurmann | Research Thoughts</title>
+  <title>Research Thoughts</title>
 </svelte:head>
 
 <div class="identity-grid reverse-mobile">

@@ -4,7 +4,7 @@
 </script>
 
 <svelte:head>
-  <title>Aiko Schurmann | Courses</title>
+  <title>Courses</title>
 </svelte:head>
 
 <div class="identity-grid reverse-mobile">

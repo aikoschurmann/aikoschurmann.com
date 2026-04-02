@@ -14,49 +14,49 @@
 
     if (path === '/projects') {
       return {
-        title: 'Aiko Schurmann | Projects Archive',
+        title: 'Projects Archive',
         description: 'Systems and performance-focused projects in C, Zig, and x86-64, including compilers, rendering, and data tooling.'
       };
     }
 
     if (path.startsWith('/projects/')) {
       return {
-        title: 'Aiko Schurmann | Project Details',
+        title: 'Project Details',
         description: 'Project deep dives covering architecture, trade-offs, and benchmark-driven systems engineering decisions.'
       };
     }
 
     if (path === '/blog') {
       return {
-        title: 'Aiko Schurmann | Research Thoughts',
+        title: 'Research Thoughts',
         description: 'Technical writing on compilers, systems programming, and high-performance software engineering.'
       };
     }
 
     if (path === '/courses') {
       return {
-        title: 'Aiko Schurmann | Courses',
+        title: 'Courses',
         description: 'Structured learning tracks that bundle technical posts into guided systems and performance-focused courses.'
       };
     }
 
     if (path.startsWith('/blog/')) {
       return {
-        title: 'Aiko Schurmann | Technical Writing',
+        title: 'Technical Writing',
         description: 'Engineering notes on low-level implementation details, performance experiments, and systems design.'
       };
     }
 
     if (isCourseLessonPage) {
       return {
-        title: 'Aiko Schurmann | Course Lesson',
+        title: 'Course Lesson',
         description: 'A structured lesson from a guided systems and compiler engineering course.'
       };
     }
 
     if (path.startsWith('/courses/')) {
       return {
-        title: 'Aiko Schurmann | Course',
+        title: 'Course',
         description: 'A guided course built from related technical posts.'
       };
     }
