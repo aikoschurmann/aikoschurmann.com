@@ -6,6 +6,7 @@
 
   let { data } = $props<{ data: PageData }>();
   const course = $derived(data.course);
+  const courseTag = $derived(getTagData(course.tag));
   const levelTag = $derived(getTagData(course.level));
   const canonicalUrl = $derived(`${page.url.origin}${page.url.pathname}`);
   const collapsedSections = $state<Record<number, boolean>>({});
@@ -37,6 +38,7 @@
     <section id="course-overview">
       <h2 class="big-title">{course.title.split(' ')[0]} <br><span>{course.title.split(' ').slice(1).join(' ')}</span></h2>
       <div class="course-meta-row">
+        <span class="course-meta-item course-meta-topic" style={courseTag.style}>{courseTag.name}</span>
         <span class="course-meta-item course-meta-level" style={levelTag.style}>{levelTag.name}</span>
         <span class="course-meta-item course-meta-count">{course.postCount} {course.postCount === 1 ? 'chapter' : 'chapters'}</span>
       </div>
@@ -89,7 +91,7 @@
                     <p class="chapter-desc">{post.description}</p>
                     <div class="chapter-meta">
                       <span class="chapter-tag" style={post.tag.style}>{post.tag.name}</span>
-                      <span>{post.readTime}</span>
+                      <span class="chapter-read-time">{post.readTime}</span>
                     </div>
                   </a>
                 {/each}
@@ -121,6 +123,13 @@
   }
 
   .course-meta-level {
+    padding: 0.3rem 0.52rem;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    white-space: nowrap;
+  }
+
+  .course-meta-topic {
     padding: 0.3rem 0.52rem;
     border-radius: 6px;
     border: 1px solid rgba(255, 255, 255, 0.12);
@@ -406,6 +415,12 @@
       margin: 0.85rem 0 1rem;
       gap: 0.4rem;
       justify-content: center;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .chapter-read-time {
+      display: none;
     }
   }
 

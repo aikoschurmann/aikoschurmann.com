@@ -1,0 +1,4 @@
+{
+  "title": "Automata Theory",
+  "description": "From regular languages to practical recognizers: regex, NFA/DFA construction, and pushdown automata as the bridge to nested syntax."
+}

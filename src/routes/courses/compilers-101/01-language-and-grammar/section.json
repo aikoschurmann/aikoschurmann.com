@@ -1,4 +1,4 @@
 {
-  "title": "Compiler Overview and Grammar Basics",
-  "description": "Build a mental model of the compiler pipeline, then formalize syntax with BNF so parsing becomes systematic."
+  "title": "Compiler Foundations",
+  "description": "Establish the core mental model: what compilation is, how phases compose, and the contracts between front-end and back-end stages."
 }

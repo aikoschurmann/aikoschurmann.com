@@ -7,11 +7,33 @@ import rehypeKatex from 'rehype-katex';
 
 let highlighter;
 
+function rehypeEscapeSvelteSensitiveText() {
+	return (tree) => {
+		const walk = (node) => {
+			if (!node || typeof node !== 'object') return;
+
+			if (node.type === 'text' && typeof node.value === 'string') {
+				node.value = node.value
+					.replace(/\{/g, '&#123;')
+					.replace(/\}/g, '&#125;')
+					.replace(/</g, '&lt;')
+					.replace(/>/g, '&gt;');
+			}
+
+			if (Array.isArray(node.children)) {
+				for (const child of node.children) walk(child);
+			}
+		};
+
+		walk(tree);
+	};
+}
+
 /** @type {import('mdsvex').MdsvexOptions} */
 const mdsvexOptions = {
 	extensions: ['.svx', '.md'],
 	remarkPlugins: [remarkMath],
-	rehypePlugins: [rehypeKatex],
+	rehypePlugins: [[rehypeKatex, { output: 'html' }], rehypeEscapeSvelteSensitiveText],
 	layout: {
 		blog: resolve(import.meta.dirname, './src/lib/components/PostLayout.svelte')
 	},

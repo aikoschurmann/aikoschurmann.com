@@ -103,6 +103,8 @@ Definition: A token is the smallest unit of meaning in a programming language. T
 
 In practice, lexer rules are typically specified with regular expressions and implemented using finite-state automata (often deterministic finite automata after construction/minimization).
 
+Regular expressions describe token patterns, and finite-state automata recognize those patterns efficiently in a single left-to-right pass over input.
+
 
 
 ### 1.4.2 Token Categories
@@ -540,6 +542,8 @@ x = t2
 
 On a register machine, a possible assembly-like lowering is:
 
+Note: this is pseudo-assembly for illustration. The bracket form (for example `[a]`) denotes a memory operand, not a specific ISA syntax.
+
 ```text
 mov r0, [a]
 add r0, [b]
@@ -573,13 +577,13 @@ This is why code generation is often split into multiple passes: instruction sel
 
 ### 1.10.1 1950s Origins
 
-The first compiler is generally credited to Grace Hopper's A-0 system (1952).[1] Early systems were primitive by modern standards, often closer to assemblers with macro expansion than to fully optimizing compilers.
+The first compiler is generally credited to Grace Hopper's A-0 system (1952). Early systems were primitive by modern standards, often closer to assemblers with macro expansion than to fully optimizing compilers.
 
 Even so, this was a conceptual breakthrough: programmers could begin writing symbolic, machine-independent instructions and rely on translation software to produce executable programs.
 
 ### 1.10.2 FORTRAN and the Performance Proof
 
-FORTRAN (1957) was the first widely adopted high-level language with a serious optimizing compiler.[2]
+FORTRAN (1957) was the first widely adopted high-level language with a serious optimizing compiler.
 
 Its team demonstrated something critical for the entire industry: compiled code could match, and in many cases outperform, hand-written assembly in practical workloads.
 
@@ -589,15 +593,15 @@ That result changed adoption dynamics. High-level languages were no longer just 
 
 By the 1970s and 1980s, compiler construction became both a research discipline and an industrial foundation. Work on parsing theory, optimization algorithms, and data-flow analysis moved from papers into production toolchains.
 
-At the same time, open compiler ecosystems (such as GCC in the late 1980s) made high-quality compilation widely accessible and accelerated cross-platform software development.[3]
+At the same time, open compiler ecosystems (such as GCC in the late 1980s) made high-quality compilation widely accessible and accelerated cross-platform software development.
 
 ### 1.10.4 Contemporary Compiler Development
 
 Modern compiler development now spans static compilers, runtime compilers, and editor-integrated analysis systems:
 
-- LLVM: a modular infrastructure that separates language front-ends from architecture back-ends. Rust, Swift, and Clang-based C/C++ toolchains all build on LLVM.[4]
-- JIT compilation: runtime translation and optimization based on observed execution behavior. JavaScript engines such as V8 and SpiderMonkey rely heavily on JIT strategies.[5][6]
-- Language servers: compiler-backed tooling exposed through protocols like LSP, enabling autocomplete, inline diagnostics, go-to-definition, and safe refactoring in editors.[7]
+- LLVM: a modular infrastructure that separates language front-ends from architecture back-ends. Rust, Swift, and Clang-based C/C++ toolchains all build on LLVM.
+- JIT compilation: runtime translation and optimization based on observed execution behavior. JavaScript engines such as V8 and SpiderMonkey rely heavily on JIT strategies.
+- Language servers: compiler-backed tooling exposed through protocols like LSP, enabling autocomplete, inline diagnostics, go-to-definition, and safe refactoring in editors.
 
 This means "the compiler" is no longer just a batch executable. It is also a persistent service in IDEs and a runtime optimization engine inside virtual machines and language runtimes.
 
@@ -658,15 +662,26 @@ int r = p + p;
 Take this C snippet:
 
 ```c
-if (a > b) {
-  max = a;
+int left = 14;
+int right = 9;
+int left2 = left * 2;
+int right2 = right * 2;
+int max_scaled;
+
+if (left2 > right2) {
+	max_scaled = left2;
 } else {
-  max = b;
+	max_scaled = right2;
 }
 ```
 
-Do the following:
+Sketch an IR representation that makes control flow explicit, and propose possible optimisations that could be applied to that IR before code generation.
 
-1. Write a three-address style IR with explicit temporaries and labels.
-2. Propose one optimization that could apply to your IR.
-3. Write a small assembly-like lowering that respects branch structure.
+### 1.12.5 Which Phase Catches It?
+
+For each snippet, name the earliest compiler phase that should reject it (lexical analysis, syntax analysis, or semantic analysis) and briefly justify your choice.
+
+1. `int x = ;`
+2. `int x = y;` where `y` was never declared
+3. `int 9abc = 3;`
+4. `int *p = 5 + 2;` (in a language where implicit int-to-pointer conversion is disallowed)

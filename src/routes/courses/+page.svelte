@@ -1,5 +1,6 @@
 <script lang="ts">
   import { courses } from '$lib/data';
+  import { getTagData } from '$lib/data';
   import ProfileSidebar from '$lib/components/ProfileSidebar.svelte';
 </script>
 
@@ -17,6 +18,7 @@
 
       <div class="project-list">
         {#each courses as course}
+          {@const levelTag = getTagData(course.level)}
           <a href={`/courses/${course.slug}`} class="post-card course-card">
             <div class="card-header">
               <div class="card-header-left">
@@ -38,7 +40,7 @@
             <p class="post-desc">{course.description}</p>
 
             <div class="post-meta">
-              <span>{course.level}</span>
+              <span class="course-level-tag" style={levelTag.style}>{levelTag.name}</span>
               <span>{course.postCount} POSTS</span>
               <span>{course.totalReadMinutes} MIN READ</span>
             </div>
@@ -52,5 +54,9 @@
 <style>
   .course-card .post-desc {
     max-width: none;
+  }
+
+  .course-level-tag {
+    border-color: color-mix(in srgb, currentColor 35%, transparent) !important;
   }
 </style>

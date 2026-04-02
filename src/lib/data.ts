@@ -119,6 +119,7 @@ type CourseMeta = {
   title?: string;
   description?: string;
   level?: string;
+  tag?: string;
 };
 
 type SectionMeta = {
@@ -138,7 +139,8 @@ function normalizeCourseMeta(value: unknown): CourseMeta {
   return {
     title: typeof obj.title === 'string' ? obj.title : undefined,
     description: typeof obj.description === 'string' ? obj.description : undefined,
-    level: typeof obj.level === 'string' ? obj.level : undefined
+    level: typeof obj.level === 'string' ? obj.level : undefined,
+    tag: typeof obj.tag === 'string' ? obj.tag : undefined
   };
 }
 
@@ -269,6 +271,7 @@ export type Course = {
   title: string;
   description: string;
   level: string;
+  tag: string;
   sections: CourseSection[];
   posts: CoursePost[];
   postCount: number;
@@ -318,6 +321,7 @@ export const courses: Course[] = Array.from(courseBuckets.entries())
 
     const title = courseMeta?.title || slugToTitle(slug);
     const level = slug.includes('101') ? 'BEGINNER TO INTERMEDIATE' : 'INTERMEDIATE';
+    const courseTag = courseMeta?.tag || 'COMPILERS';
 
     const sectionMap = new Map<
       string,
@@ -392,6 +396,7 @@ export const courses: Course[] = Array.from(courseBuckets.entries())
       title,
       description,
       level: courseMeta?.level || level,
+      tag: courseTag,
       sections,
       posts,
       postCount: posts.length,

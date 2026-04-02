@@ -1,0 +1,4 @@
+{
+  "title": "Lexer Engineering",
+  "description": "Turn automata into production lexers: token specs, matching policy, scanner modes, diagnostics, and performance concerns."
+}

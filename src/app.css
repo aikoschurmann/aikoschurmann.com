@@ -489,11 +489,18 @@ nav.dock {
   margin: 2.2rem 0 2.6rem;
   border-collapse: separate;
   border-spacing: 0;
-  display: block;
-  overflow-x: auto;
+  table-layout: auto;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid var(--border);
   border-radius: 10px;
+}
+
+@media (max-width: 860px) {
+  .prose table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
 }
 
 .prose thead th {
@@ -535,6 +542,20 @@ nav.dock {
   overflow-x: auto;
   overflow-y: hidden;
   padding: 0.25rem 0;
+}
+
+/* KaTeX applies italic correction at inline math boundaries.
+   Tighten inline spacing slightly so trailing punctuation doesn't look detached. */
+.prose p .katex,
+.prose li .katex,
+.prose td .katex,
+.prose th .katex,
+.prose blockquote .katex {
+  margin-right: -0.035em;
+}
+
+.prose .katex-display .katex {
+  margin-right: 0;
 }
 
 footer {
