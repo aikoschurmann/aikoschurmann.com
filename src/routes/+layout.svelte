@@ -76,6 +76,9 @@
   );
   const isBlogDetailPage = $derived(page.url.pathname.startsWith('/blog/') || isCourseLessonPage);
   const isProjectDetailPage = $derived(page.url.pathname.startsWith('/projects/'));
+  const isProjectPage = $derived(
+    page.url.pathname === '/projects' || page.url.pathname.startsWith('/projects/')
+  );
 
   const personJsonLd = $derived(
     JSON.stringify({
@@ -99,7 +102,7 @@
 </script>
 
 <svelte:head>
-  <meta name="robots" content="index, follow" />
+  <meta name="robots" content={isProjectPage ? 'noindex, follow' : 'index, follow'} />
 
   {#if !isDetailPage}
     <meta name="description" content={seoData.description} />
