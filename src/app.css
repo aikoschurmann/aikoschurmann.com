@@ -121,9 +121,15 @@ nav.dock {
   height: auto;
   aspect-ratio: 1.0; 
   border-radius: 10px; 
-  object-fit: cover;
   margin-bottom: 2rem !important; 
   border: none;
+}
+
+.profile-photo {
+  background-image: url('/picture.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .profile-card h2 {

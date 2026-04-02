@@ -17,13 +17,11 @@
 
 <aside class="profile-sidebar">
 	<div class="profile-card">
-		<img
-			src="/picture.jpg"
-			alt="Aiko Schurmann"
-			class="profile-img"
-			loading={eagerImage ? 'eager' : 'lazy'}
-			fetchpriority={eagerImage ? 'high' : 'auto'}
-		/>
+		<div
+			class="profile-img profile-photo"
+			role="img"
+			aria-label="Aiko Schurmann"
+		></div>
 		<h2>Aiko Schurmann</h2>
 		<p>{bio}</p>
 
