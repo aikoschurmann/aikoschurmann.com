@@ -24,7 +24,6 @@
     })
   );
   const canonicalUrl = $derived(`${page.url.origin}${page.url.pathname}`);
-  const ogImageUrl = $derived(`${page.url.origin}/picture.jpg`);
   const fullTitle = $derived(`${title} | Project`);
 
   const projectJsonLd = $derived(
@@ -34,11 +33,7 @@
       name: title,
       description,
       codeRepository: github || undefined,
-      url: canonicalUrl,
-      author: {
-        '@type': 'Person',
-        name: 'Aiko Schurmann'
-      }
+      url: canonicalUrl
     })
   );
 </script>
@@ -51,14 +46,12 @@
   <meta property="og:title" content={fullTitle} />
   <meta property="og:description" content={description} />
   <meta property="og:url" content={canonicalUrl} />
-  <meta property="og:image" content={ogImageUrl} />
   <meta property="og:type" content="article" />
 
   <!-- X/Twitter cards work without a Twitter account -->
-  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content={fullTitle} />
   <meta name="twitter:description" content={description} />
-  <meta name="twitter:image" content={ogImageUrl} />
 
   <script type="application/ld+json">{projectJsonLd}</script>
 </svelte:head>

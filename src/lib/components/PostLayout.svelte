@@ -18,7 +18,6 @@
   let tocListEl = $state<HTMLElement | null>(null);
 
   const canonicalUrl = $derived(`${page.url.origin}${page.url.pathname}`);
-  const ogImageUrl = $derived(`${page.url.origin}/picture.jpg`);
   const fullTitle = $derived(`${title} | Systems Notes`);
   const metaDescription = $derived(description || `Research and technical notes on ${title}.`);
   const tagData = $derived(tag ? getTagData(tag) : undefined);
@@ -68,14 +67,9 @@
       '@type': 'BlogPosting',
       headline: title,
       description: metaDescription,
-      author: {
-        '@type': 'Person',
-        name: 'Aiko Schurmann'
-      },
       datePublished: publishedTime,
       dateModified: publishedTime,
       url: canonicalUrl,
-      image: ogImageUrl,
       inLanguage: 'en'
     })
   );
@@ -289,18 +283,15 @@
   <meta property="og:title" content={fullTitle} />
   <meta property="og:description" content={metaDescription} />
   <meta property="og:url" content={canonicalUrl} />
-  <meta property="og:image" content={ogImageUrl} />
   <meta property="og:type" content="article" />
   {#if publishedTime}
     <meta property="article:published_time" content={publishedTime} />
   {/if}
-  <meta property="article:author" content="Aiko Schurmann" />
   
   <!-- X/Twitter cards work without a Twitter account -->
-  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content={fullTitle} />
   <meta name="twitter:description" content={metaDescription} />
-  <meta name="twitter:image" content={ogImageUrl} />
 
   <script type="application/ld+json">{articleJsonLd}</script>
 </svelte:head>

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from '$app/state';
   import ProfileSidebar from '$lib/components/ProfileSidebar.svelte';
   import { getTagData } from '$lib/data';
   import type { PageData } from './$types';
@@ -6,6 +7,7 @@
   let { data } = $props<{ data: PageData }>();
   const course = $derived(data.course);
   const levelTag = $derived(getTagData(course.level));
+  const canonicalUrl = $derived(`${page.url.origin}${page.url.pathname}`);
   const collapsedSections = $state<Record<number, boolean>>({});
 
   function toggleSection(sectionIndex: number) {
@@ -16,6 +18,16 @@
 <svelte:head>
   <title>{course.title} | Course</title>
   <meta name="description" content={course.description} />
+  <link rel="canonical" href={canonicalUrl} />
+
+  <meta property="og:title" content={`${course.title} | Course`} />
+  <meta property="og:description" content={course.description} />
+  <meta property="og:url" content={canonicalUrl} />
+  <meta property="og:type" content="article" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content={`${course.title} | Course`} />
+  <meta name="twitter:description" content={course.description} />
 </svelte:head>
 
 <div class="identity-grid reverse-mobile">

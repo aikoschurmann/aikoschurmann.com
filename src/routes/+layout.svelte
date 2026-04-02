@@ -68,7 +68,6 @@
   });
 
   const canonicalUrl = $derived(`${page.url.origin}${page.url.pathname}`);
-  const ogImageUrl = $derived(`${page.url.origin}/picture.jpg`);
   const isDetailPage = $derived(
     page.url.pathname.startsWith('/blog/') ||
     page.url.pathname.startsWith('/projects/') ||
@@ -86,7 +85,6 @@
       '@type': 'Person',
       name: 'Aiko Schurmann',
       url: page.url.origin,
-      image: ogImageUrl,
       jobTitle: 'Software Engineer',
       homeLocation: {
         '@type': 'Country',
@@ -111,15 +109,13 @@
     <meta property="og:title" content={seoData.title} />
     <meta property="og:description" content={seoData.description} />
     <meta property="og:url" content={canonicalUrl} />
-    <meta property="og:image" content={ogImageUrl} />
     <meta property="og:site_name" content="Aiko Schurmann" />
     <meta property="og:type" content="website" />
 
     <!-- X/Twitter cards work without a Twitter account -->
-    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content={seoData.title} />
     <meta name="twitter:description" content={seoData.description} />
-    <meta name="twitter:image" content={ogImageUrl} />
   {/if}
 
   <script type="application/ld+json">{personJsonLd}</script>
