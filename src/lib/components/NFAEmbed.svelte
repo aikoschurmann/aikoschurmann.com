@@ -307,7 +307,7 @@
 
 		if (edge.self) {
 			const loopSpan = 18;
-			const loopRise = 30;
+			const loopRise = 40;
 			return [
 				`M ${from.x - loopSpan} ${from.y - nodeRadius + 1}`,
 				`C ${from.x - 34} ${from.y - nodeRadius - loopRise}, ${from.x + 34} ${from.y - nodeRadius - loopRise}, ${from.x + loopSpan} ${from.y - nodeRadius + 1}`
