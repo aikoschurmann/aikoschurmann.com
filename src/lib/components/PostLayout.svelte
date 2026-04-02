@@ -563,7 +563,6 @@
   .course-step-link:hover {
     background: rgba(255, 255, 255, 0.08);
     border-color: rgba(255, 255, 255, 0.2);
-    transform: translateY(-1px);
   }
 
   .back-link {
