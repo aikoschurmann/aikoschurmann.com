@@ -486,6 +486,7 @@ nav.dock {
 
 .prose table {
   width: 100%;
+  min-width: 100%;
   margin: 2.2rem 0 2.6rem;
   border-collapse: separate;
   border-spacing: 0;
@@ -498,8 +499,18 @@ nav.dock {
 @media (max-width: 860px) {
   .prose table {
     display: block;
+    width: 100%;
     overflow-x: auto;
-    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .prose table thead,
+  .prose table tbody,
+  .prose table tr {
+    display: table;
+    width: 100%;
+    min-width: 100%;
+    table-layout: fixed;
   }
 }
 
