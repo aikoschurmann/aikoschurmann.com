@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { projects, thoughts } from '$lib/data';
+  import { blogThoughts, projects } from '$lib/data';
   import ProfileSidebar from '$lib/components/ProfileSidebar.svelte';
   import ProjectCard from '$lib/components/ProjectCard.svelte';
   import ThoughtCard from '$lib/components/ThoughtCard.svelte';
 
   const homeProjects = projects.filter(p => p.showOnHome);
-  const homeThoughts = thoughts.filter(t => t.showOnHome);
+  const homeThoughts = blogThoughts.filter(t => t.showOnHome);
 </script>
 
 <svelte:head>

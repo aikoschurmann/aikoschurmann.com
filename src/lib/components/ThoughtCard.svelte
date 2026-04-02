@@ -13,10 +13,10 @@
     tag: ThoughtTag;
   };
 
-  let { thought } = $props<{ thought: ThoughtCardData }>();
+  let { thought, href } = $props<{ thought: ThoughtCardData; href?: string }>();
 </script>
 
-<a href={thought.url} class="post-card">
+<a href={href ?? thought.url} class="post-card">
   <div class="card-header">
     <div class="card-header-left">
       <div class="post-thumb">

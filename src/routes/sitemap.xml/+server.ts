@@ -1,4 +1,4 @@
-import { projects, thoughts } from '$lib/data';
+import { blogThoughts, courses, projects } from '$lib/data';
 import type { RequestHandler } from './$types';
 
 const SITE_URL = 'https://aikoschurmann.com';
@@ -10,12 +10,16 @@ function toIsoDate(value: string): string | undefined {
 }
 
 export const GET: RequestHandler = () => {
-  const staticRoutes = ['/', '/projects', '/blog'];
-  const dynamicRoutes = [...projects.map((project) => project.url), ...thoughts.map((thought) => thought.url)];
+  const staticRoutes = ['/', '/projects', '/blog', '/courses'];
+  const dynamicRoutes = [
+    ...projects.map((project) => project.url),
+    ...blogThoughts.map((thought) => thought.url),
+    ...courses.map((course) => `/courses/${course.slug}`)
+  ];
   const allRoutes = [...new Set([...staticRoutes, ...dynamicRoutes])];
 
   const today = new Date().toISOString().split('T')[0];
-  const thoughtDateMap = new Map(thoughts.map((thought) => [thought.url, toIsoDate(thought.date)]));
+  const thoughtDateMap = new Map(blogThoughts.map((thought) => [thought.url, toIsoDate(thought.date)]));
 
   const urlset = allRoutes
     .map((route) => {

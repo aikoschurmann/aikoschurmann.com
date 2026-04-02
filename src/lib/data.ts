@@ -1,109 +1,40 @@
-// Central dictionary for semantic tag colors
-// Categorized Tag Colors
-// src/lib/data.ts
+import { projectEntries } from './content/projects';
+import { tagColors } from './content/tags';
 
-const TAG_COLORS: Record<string, { color: string; bg: string }> = {
-  // --- Languages (The Core Tools) ---
-  'C': { color: '#60a5fa', bg: 'rgba(96, 165, 250, 0.1)' },
-  'C99': { color: '#60a5fa', bg: 'rgba(96, 165, 250, 0.1)' },
-  'ZIG': { color: '#f97316', bg: 'rgba(249, 115, 22, 0.1)' }, // Logo-matched Orange
-
-  // --- Hardware & Architecture (Close to the Metal) ---
-  'x86-64': { color: '#34d399', bg: 'rgba(52, 211, 153, 0.1)' },
-  'ASM': { color: '#34d399', bg: 'rgba(52, 211, 153, 0.1)' },
-  'SIMD': { color: '#34d399', bg: 'rgba(52, 211, 153, 0.1)' },
-  'BITBOARDS': { color: '#34d399', bg: 'rgba(52, 211, 153, 0.1)' },
-
-  // --- Compiler & Software Logic (Intermediate Layer) ---
-  'INTERNING': { color: '#c084fc', bg: 'rgba(192, 132, 252, 0.1)' },
-  'TYPECHECKING': { color: '#c084fc', bg: 'rgba(192, 132, 252, 0.1)' },
-  'JSON PARSER': { color: '#c084fc', bg: 'rgba(192, 132, 252, 0.1)' },
-  'AOT': { color: '#c084fc', bg: 'rgba(192, 132, 252, 0.1)' },
-  'LLVM IR': { color: '#c084fc', bg: 'rgba(192, 132, 252, 0.1)' },
-
-  // --- Benchmarks (Performance Claims) ---
-  '120K TRIS @ 120 FPS': { color: '#fbbf24', bg: 'rgba(251, 191, 36, 0.1)' },
-  '4.0 GB/S': { color: '#fbbf24', bg: 'rgba(251, 191, 36, 0.1)' },
-
-  // --- Analysis & Research (Systems Focus) ---
-  'SECURITY': { color: '#f87171', bg: 'rgba(248, 113, 113, 0.1)' },
-};
-
-// Helper function to resolve a tag string into an object with inline styles
 export function getTagData(name: string) {
-  const style = TAG_COLORS[name];
+  const style = tagColors[name];
   if (style) {
     return { name, style: `color: ${style.color}; background: ${style.bg};` };
   }
-  // Default fallback style for unknown tags
-  return { name, style: `color: var(--fg-muted); background: rgba(255, 255, 255, 0.05);` };
+
+  return { name, style: 'color: var(--fg-muted); background: rgba(255, 255, 255, 0.05);' };
 }
 
-const rawProjects = [
-  {
-    title: 'software-renderer',
-    url: '/projects/software-renderer',
-    github: 'https://github.com/aikoschurmann/software-renderer',
-    thumb: 'SR',
-    description: 'A multi-threaded 3D graphics pipeline built from scratch in C, achieving high-performance rasterization without GPU acceleration.',
-    tags: ['C', 'SIMD', '120K TRIS @ 120 FPS'],
-    showOnHome: true,
-    research: []
-  },
-  {
-    title: 'compiler-v3',
-    url: '/projects/compiler-v3',
-    github: 'https://github.com/aikoschurmann/compiler-v3',
-    thumb: 'C3',
-    description: 'A high-performance compiler for a strongly-typed procedural language, featuring recursive type checking and dense-ID symbol resolution.',
-    tags: ['C', 'INTERNING', 'TYPECHECKING'],
-    showOnHome: true,
-    research: [
-      { title: 'O(1) Symbol Resolution: The Power of String Interning', url: '/blog/string-interning-compilers' }
-    ]
-  },
-  {
-    title: 'zog',
-    url: '/projects/zog',
-    github: 'https://github.com/aikoschurmann/zog',
-    thumb: 'ZG',
-    description: 'A blisteringly fast, zero-allocation JSONL scanner written in Zig, saturating NVMe bandwidth via SIMD vectorization.',
-    tags: ['ZIG', 'JSON PARSER', '4.0 GB/S'],
-    showOnHome: true,
-    research: [
-      { title: 'The Nitty Gritty of zog: Pushing JSONL to 4.0 GB per second', url: '/blog/simd-parsing-zig' }
-    ]
-  },
-  {
-    title: 'cfgsafe',
-    url: '/projects/cfgsafe',
-    github: 'https://github.com/aikoschurmann/cfgsafe',
-    thumb: 'CS',
-    description: 'A declarative schema-driven configuration engine for C99, generating strongly-typed and memory-safe code.',
-    tags: ['C', 'SECURITY', 'AOT'],
-    showOnHome: true,
-    research: []
-  },
-  {
-    title: 'chess-asm',
-    url: '/projects/chess-asm',
-    github: 'https://github.com/aikoschurmann/chess-asm',
-    thumb: 'CH',
-    description: 'A high-performance chess engine utilizing bitboards and heavily optimized x86-64 assembly routines.',
-    tags: ['x86-64', 'ASM', 'BITBOARDS'],
-    showOnHome: false,
-    research: []
-  }
-];
-
-// Map the raw projects to automatically inject the color styles
-export const projects = rawProjects.map(p => ({
-  ...p,
-  tags: p.tags.map(getTagData)
+export const projects = projectEntries.map((project) => ({
+  ...project,
+  tags: project.tags.map(getTagData)
 }));
 
 // Import raw markdown text for both frontmatter metadata and word-count calculation.
-const rawModules = import.meta.glob('/src/routes/blog/*/+page.md', { query: '?raw', import: 'default', eager: true });
+const rawBlogModules = import.meta.glob('/src/routes/blog/*/+page.md', {
+  query: '?raw',
+  import: 'default',
+  eager: true
+});
+const rawCourseLessonModules = import.meta.glob('/src/routes/courses/*/*/*/+page.md', {
+  query: '?raw',
+  import: 'default',
+  eager: true
+});
+const rawCourseMetaModules = import.meta.glob('/src/routes/courses/*/course.json', {
+  import: 'default',
+  eager: true
+});
+const rawSectionMetaModules = import.meta.glob('/src/routes/courses/*/*/section.json', {
+  import: 'default',
+  eager: true
+});
+const rawModules = { ...rawBlogModules, ...rawCourseLessonModules };
 
 function parseFrontmatter(raw: string) {
   const match = raw.match(/^---\n([\s\S]*?)\n---/);
@@ -135,31 +66,340 @@ function parseFrontmatter(raw: string) {
   return meta;
 }
 
+function getMetaString(meta: Record<string, unknown>, key: string): string | undefined {
+  const value = meta[key];
+  if (typeof value !== 'string') return undefined;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+}
+  
+function countWords(text: string): number {
+  return text.split(/\s+/).filter((word) => word.length > 0).length;
+}
+
+function getReadingStats(rawContent: string) {
+  const contentWithoutFrontmatter = rawContent.replace(/^---[\s\S]*?---\n?/, '');
+  const codeBlocks = contentWithoutFrontmatter.match(/```[\s\S]*?```/g) || [];
+
+  const proseSource = contentWithoutFrontmatter
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/!\[([^\]]*)\]\([^)]+\)/g, ' $1 ')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, ' $1 ')
+    .replace(/<[^>]*>?/gm, ' ')
+    .replace(/`([^`]+)`/g, ' $1 ')
+    .replace(/[#*_>\[\]{}()|~`]/g, ' ')
+    .replace(/[.,;:!?]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  const codeSource = codeBlocks
+    .map((block) => block.replace(/^```[^\n]*\n?/, '').replace(/```$/, ' '))
+    .join(' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  const proseWords = countWords(proseSource);
+  const codeWords = countWords(codeSource);
+
+  // Code examples matter for reading time, but they are typically scanned faster than prose.
+  const effectiveWords = proseWords + Math.round(codeWords * 0.35);
+  const readMinutes = Math.max(1, Math.ceil(effectiveWords / 225));
+
+  return { effectiveWords, readMinutes };
+}
+
+function slugToTitle(slug: string): string {
+  return slug
+    .split('-')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
+type CourseMeta = {
+  title?: string;
+  description?: string;
+  level?: string;
+};
+
+type SectionMeta = {
+  title?: string;
+  description?: string;
+};
+
+function asObject(value: unknown): Record<string, unknown> | undefined {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined;
+  return value as Record<string, unknown>;
+}
+
+function normalizeCourseMeta(value: unknown): CourseMeta {
+  const obj = asObject(value);
+  if (!obj) return {};
+
+  return {
+    title: typeof obj.title === 'string' ? obj.title : undefined,
+    description: typeof obj.description === 'string' ? obj.description : undefined,
+    level: typeof obj.level === 'string' ? obj.level : undefined
+  };
+}
+
+function normalizeSectionMeta(value: unknown): SectionMeta {
+  const obj = asObject(value);
+  if (!obj) return {};
+
+  return {
+    title: typeof obj.title === 'string' ? obj.title : undefined,
+    description: typeof obj.description === 'string' ? obj.description : undefined
+  };
+}
+
+const courseMetaBySlug = new Map<string, CourseMeta>();
+for (const [path, value] of Object.entries(rawCourseMetaModules)) {
+  const match = path.match(/\/src\/routes\/courses\/([^/]+)\/course\.json$/);
+  if (!match) continue;
+
+  courseMetaBySlug.set(match[1], normalizeCourseMeta(value));
+}
+
+const sectionMetaByKey = new Map<string, SectionMeta>();
+for (const [path, value] of Object.entries(rawSectionMetaModules)) {
+  const match = path.match(/\/src\/routes\/courses\/([^/]+)\/([^/]+)\/section\.json$/);
+  if (!match) continue;
+
+  sectionMetaByKey.set(`${match[1]}/${match[2]}`, normalizeSectionMeta(value));
+}
+
+function parseOrderedSegment(segment: string) {
+  const match = segment.match(/^(\d+)-(.+)$/);
+  if (!match) {
+    return {
+      order: Number.MAX_SAFE_INTEGER,
+      slug: segment,
+      title: slugToTitle(segment)
+    };
+  }
+
+  return {
+    order: Number.parseInt(match[1], 10),
+    slug: match[2],
+    title: slugToTitle(match[2])
+  };
+}
+
+function getCoursePathMeta(url: string) {
+  const segments = url.split('/').filter(Boolean);
+  if (segments.length !== 4 || segments[0] !== 'courses') return undefined;
+
+  const courseSlug = segments[1];
+  const section = parseOrderedSegment(segments[2]);
+  const lesson = parseOrderedSegment(segments[3]);
+
+  return {
+    courseSlug,
+    courseTitle: slugToTitle(courseSlug),
+    courseSectionSegment: segments[2],
+    courseSectionSlug: section.slug,
+    courseSectionTitle: section.title,
+    courseSectionOrder: section.order,
+    courseLessonSlug: lesson.slug,
+    courseLessonTitle: lesson.title,
+    courseLessonOrder: lesson.order
+  };
+}
+
 // Map over raw markdown files to generate the dynamic list.
 export const thoughts = Object.entries(rawModules).map(([path, raw]) => {
   const url = path.replace('/src/routes', '').replace('/+page.md', '');
   const rawContent = raw as string;
   const meta = parseFrontmatter(rawContent);
-  
-  const contentWithoutFrontmatter = rawContent.replace(/^---[\s\S]*?---\n?/, '');
-  const cleanText = contentWithoutFrontmatter.replace(/<[^>]*>?/gm, '').replace(/[#*_>\[\]]/g, '');
-  const wordCount = cleanText.split(/\s+/).filter(word => word.length > 0).length;
-  const readTimeMinutes = Math.max(1, Math.ceil(wordCount / 225));
+  const courseMeta = getCoursePathMeta(url);
+  const isBlogPost = url.startsWith('/blog/');
+  const readingStats = getReadingStats(rawContent);
 
-  // Extract the tag name, and pass it through our color resolver
-  const tagName = typeof meta.tag === 'string' ? meta.tag : 'RESEARCH';
-  const title = typeof meta.title === 'string' ? meta.title : 'Untitled Thought';
-  const description = typeof meta.description === 'string' ? meta.description : '';
-  const date = typeof meta.date === 'string' ? meta.date : '';
+  const tagName = getMetaString(meta, 'tag') || 'RESEARCH';
+  const title = getMetaString(meta, 'title') || 'Untitled Thought';
+  const description = getMetaString(meta, 'description') || '';
+  const date = getMetaString(meta, 'date') || '';
   const showOnHome = meta.showOnHome !== false;
+  const showInBlog = isBlogPost ? meta.showInBlog !== false : false;
 
   return {
     title,
     url,
     description,
     date,
-    readTime: `${readTimeMinutes} MIN READ`,
+    readTime: `${readingStats.readMinutes} MIN READ`,
+    readMinutes: readingStats.readMinutes,
+    readWordCount: readingStats.effectiveWords,
     tag: getTagData(tagName),
-    showOnHome
+    showOnHome,
+    showInBlog,
+    courseSlug: courseMeta?.courseSlug,
+    courseSectionSegment: courseMeta?.courseSectionSegment,
+    courseSectionTitle: courseMeta?.courseSectionTitle,
+    courseSectionOrder: courseMeta?.courseSectionOrder,
+    courseLessonOrder: courseMeta?.courseLessonOrder,
+    courseChapterTitle: getMetaString(meta, 'chapterTitle') || courseMeta?.courseLessonTitle
   };
 }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+// Posts stay addressable for courses even when excluded from blog listings.
+export const blogThoughts = thoughts.filter((thought) => thought.showInBlog);
+
+export type Thought = (typeof thoughts)[number];
+
+export type CoursePost = Thought & {
+  part: number;
+  partInSection: number;
+  sectionIndex: number;
+  sectionTitle: string;
+  chapterTitle?: string;
+};
+
+export type CourseSection = {
+  index: number;
+  title: string;
+  description?: string;
+  posts: CoursePost[];
+  postCount: number;
+  totalReadMinutes: number;
+};
+
+export type Course = {
+  slug: string;
+  title: string;
+  description: string;
+  level: string;
+  sections: CourseSection[];
+  posts: CoursePost[];
+  postCount: number;
+  totalReadMinutes: number;
+};
+
+type CourseSourcePost = Thought & {
+  courseSlug: string;
+};
+
+function isCourseSourcePost(thought: Thought): thought is CourseSourcePost {
+  return typeof thought.courseSlug === 'string' && thought.courseSlug.length > 0;
+}
+
+function compareCoursePosts(a: CourseSourcePost, b: CourseSourcePost): number {
+  const aSectionOrder = a.courseSectionOrder ?? Number.MAX_SAFE_INTEGER;
+  const bSectionOrder = b.courseSectionOrder ?? Number.MAX_SAFE_INTEGER;
+  if (aSectionOrder !== bSectionOrder) return aSectionOrder - bSectionOrder;
+
+  const aLessonOrder = a.courseLessonOrder ?? Number.MAX_SAFE_INTEGER;
+  const bLessonOrder = b.courseLessonOrder ?? Number.MAX_SAFE_INTEGER;
+  if (aLessonOrder !== bLessonOrder) return aLessonOrder - bLessonOrder;
+
+  const aDate = new Date(a.date).getTime();
+  const bDate = new Date(b.date).getTime();
+  if (!Number.isNaN(aDate) && !Number.isNaN(bDate) && aDate !== bDate) {
+    return aDate - bDate;
+  }
+
+  return a.title.localeCompare(b.title);
+}
+
+const courseBuckets = new Map<string, CourseSourcePost[]>();
+
+for (const thought of thoughts) {
+  if (!isCourseSourcePost(thought)) continue;
+
+  const existing = courseBuckets.get(thought.courseSlug) || [];
+  existing.push(thought);
+  courseBuckets.set(thought.courseSlug, existing);
+}
+
+export const courses: Course[] = Array.from(courseBuckets.entries())
+  .map(([slug, sourcePosts]) => {
+    const sortedPosts = [...sourcePosts].sort(compareCoursePosts);
+    const courseMeta = courseMetaBySlug.get(slug);
+
+    const title = courseMeta?.title || slugToTitle(slug);
+    const level = slug.includes('101') ? 'BEGINNER TO INTERMEDIATE' : 'INTERMEDIATE';
+
+    const sectionMap = new Map<
+      string,
+      {
+        title: string;
+        order: number;
+        description?: string;
+        posts: CourseSourcePost[];
+      }
+    >();
+
+    for (const post of sortedPosts) {
+      const sectionKeyRaw = post.courseSectionSegment ? `${slug}/${post.courseSectionSegment}` : undefined;
+      const sectionMeta = sectionKeyRaw ? sectionMetaByKey.get(sectionKeyRaw) : undefined;
+      const sectionTitle = sectionMeta?.title || post.courseSectionTitle || 'Course';
+      const sectionOrder = post.courseSectionOrder ?? 999;
+      const sectionKey = `${String(sectionOrder).padStart(3, '0')}:${sectionTitle}`;
+      const existing = sectionMap.get(sectionKey);
+
+      if (existing) {
+        existing.posts.push(post);
+      } else {
+        sectionMap.set(sectionKey, {
+          title: sectionTitle,
+          order: sectionOrder,
+          description: sectionMeta?.description,
+          posts: [post]
+        });
+      }
+    }
+
+    let globalPart = 0;
+    const sections: CourseSection[] = Array.from(sectionMap.values())
+      .sort((a, b) => a.order - b.order || a.title.localeCompare(b.title))
+      .map((section, sectionIndex) => {
+        const sectionPosts = [...section.posts]
+          .sort(compareCoursePosts)
+          .map((post, index) => {
+            globalPart += 1;
+            return {
+              ...post,
+              part: globalPart,
+              partInSection: index + 1,
+              sectionIndex: sectionIndex + 1,
+              sectionTitle: section.title,
+              chapterTitle: post.courseChapterTitle
+            };
+          });
+
+        const sectionWordCount = sectionPosts.reduce((sum, post) => sum + post.readWordCount, 0);
+        const sectionReadMinutes = Math.max(1, Math.ceil(sectionWordCount / 225));
+
+        return {
+          index: sectionIndex + 1,
+          title: section.title,
+          description: section.description,
+          posts: sectionPosts,
+          postCount: sectionPosts.length,
+          totalReadMinutes: sectionReadMinutes
+        };
+      });
+
+    const posts = sections.flatMap((section) => section.posts);
+    const totalWordCount = posts.reduce((sum, post) => sum + post.readWordCount, 0);
+    const totalReadMinutes = Math.max(1, Math.ceil(totalWordCount / 225));
+    const description =
+      courseMeta?.description ||
+      `A structured track with ${posts.length} lessons across ${sections.length} sections.`;
+
+    return {
+      slug,
+      title,
+      description,
+      level: courseMeta?.level || level,
+      sections,
+      posts,
+      postCount: posts.length,
+      totalReadMinutes
+    };
+  })
+  .sort((a, b) => a.title.localeCompare(b.title));
+
+export function getCourseBySlug(slug: string) {
+  return courses.find((course) => course.slug === slug);
+}

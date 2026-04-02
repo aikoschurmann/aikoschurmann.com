@@ -1,15 +1,15 @@
 <script lang="ts">
-  import { thoughts } from '$lib/data';
+  import { blogThoughts } from '$lib/data';
   import ProfileSidebar from '$lib/components/ProfileSidebar.svelte';
   import ThoughtCard from '$lib/components/ThoughtCard.svelte';
 
-  const uniqueTags = ['All', ...new Set(thoughts.map(t => t.tag.name))];
+  const uniqueTags = ['All', ...new Set(blogThoughts.map(t => t.tag.name))];
   let activeFilter = $state('All');
   
   const filteredThoughts = $derived(
     activeFilter === 'All' 
-      ? thoughts 
-      : thoughts.filter(t => t.tag.name === activeFilter)
+      ? blogThoughts
+      : blogThoughts.filter(t => t.tag.name === activeFilter)
   );
 </script>
 

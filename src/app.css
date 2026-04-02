@@ -478,6 +478,53 @@ nav.dock {
 }
 .prose pre code { background: transparent; padding: 0; }
 
+.prose table {
+  width: 100%;
+  margin: 2.2rem 0 2.6rem;
+  border-collapse: separate;
+  border-spacing: 0;
+  display: block;
+  overflow-x: auto;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.prose thead th {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--fg);
+  background: rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.prose th,
+.prose td {
+  padding: 0.8rem 0.95rem;
+  text-align: left;
+  vertical-align: top;
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: #d8d8d8;
+}
+
+.prose tbody tr td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.prose tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.prose tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.015);
+}
+
 .prose .katex-display {
   overflow-x: auto;
   overflow-y: hidden;
@@ -635,6 +682,8 @@ footer {
   .project-card-minimal .arrow, .post-card .arrow { display: none; }
   .embed-wrapper .arrow { display: none; }
   .prose { font-size: 1.15rem; padding: 0; text-align: left; }
+  .prose thead th { font-size: 0.7rem; }
+  .prose th, .prose td { font-size: 0.85rem; padding: 0.65rem 0.75rem; }
 
   .footer-content { flex-direction: column; align-items: flex-start; gap: 2.5rem; }
   .footer-right { width: 100%; justify-content: space-between; }

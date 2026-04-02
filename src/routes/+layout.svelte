@@ -4,6 +4,10 @@
   import '../app.css';
 
   let { children } = $props();
+  const pathSegments = $derived(page.url.pathname.split('/').filter(Boolean));
+  const isCourseLessonPage = $derived(
+    pathSegments.length >= 4 && pathSegments[0] === 'courses'
+  );
 
   const seoData = $derived.by(() => {
     const path = page.url.pathname;
@@ -29,10 +33,31 @@
       };
     }
 
+    if (path === '/courses') {
+      return {
+        title: 'Aiko Schurmann | Courses',
+        description: 'Structured learning tracks that bundle technical posts into guided systems and performance-focused courses.'
+      };
+    }
+
     if (path.startsWith('/blog/')) {
       return {
         title: 'Aiko Schurmann | Technical Writing',
         description: 'Engineering notes on low-level implementation details, performance experiments, and systems design.'
+      };
+    }
+
+    if (isCourseLessonPage) {
+      return {
+        title: 'Aiko Schurmann | Course Lesson',
+        description: 'A structured lesson from a guided systems and compiler engineering course.'
+      };
+    }
+
+    if (path.startsWith('/courses/')) {
+      return {
+        title: 'Aiko Schurmann | Course',
+        description: 'A guided course built from related technical posts.'
       };
     }
 
@@ -44,8 +69,12 @@
 
   const canonicalUrl = $derived(`${page.url.origin}${page.url.pathname}`);
   const ogImageUrl = $derived(`${page.url.origin}/picture.jpg`);
-  const isDetailPage = $derived(page.url.pathname.startsWith('/blog/') || page.url.pathname.startsWith('/projects/'));
-  const isBlogDetailPage = $derived(page.url.pathname.startsWith('/blog/'));
+  const isDetailPage = $derived(
+    page.url.pathname.startsWith('/blog/') ||
+    page.url.pathname.startsWith('/projects/') ||
+    page.url.pathname.startsWith('/courses/')
+  );
+  const isBlogDetailPage = $derived(page.url.pathname.startsWith('/blog/') || isCourseLessonPage);
   const isProjectDetailPage = $derived(page.url.pathname.startsWith('/projects/'));
 
   const personJsonLd = $derived(
@@ -111,6 +140,14 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
           <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+        </svg>
+      </a>
+      <a href="/courses" class="nav-item" data-tooltip="Courses" aria-label="Courses" title="Courses">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5V4.5A2.5 2.5 0 0 1 6.5 2z"/>
+          <path d="M10 6h6"/>
+          <path d="M10 10h6"/>
         </svg>
       </a>
     </nav>
