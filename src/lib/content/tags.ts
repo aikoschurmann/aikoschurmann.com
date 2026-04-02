@@ -17,5 +17,6 @@ export const tagColors: Record<string, TagStyle> = {
   'LLVM IR': { color: '#c084fc', bg: 'rgba(192, 132, 252, 0.1)' },
   '120K TRIS @ 120 FPS': { color: '#fbbf24', bg: 'rgba(251, 191, 36, 0.1)' },
   '4.0 GB/S': { color: '#fbbf24', bg: 'rgba(251, 191, 36, 0.1)' },
-  SECURITY: { color: '#f87171', bg: 'rgba(248, 113, 113, 0.1)' }
+  SECURITY: { color: '#f87171', bg: 'rgba(248, 113, 113, 0.1)' },
+  BEGINNER: { color: '#4ade80', bg: 'rgba(74, 222, 128, 0.1)' },
 };
