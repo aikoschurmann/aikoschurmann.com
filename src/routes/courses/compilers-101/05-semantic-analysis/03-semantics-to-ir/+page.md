@@ -6,4 +6,5 @@ author: "Aiko Schurmann"
 description: "Attach semantic meaning to syntax trees and lower validated programs into IR-ready intermediate form."
 tag: "SEMANTICS"
 chapterTitle: "Semantic Lowering to IR"
+showInCourse: false
 ---

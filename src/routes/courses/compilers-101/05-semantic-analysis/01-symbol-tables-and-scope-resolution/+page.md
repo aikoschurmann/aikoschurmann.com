@@ -6,4 +6,5 @@ author: "Aiko Schurmann"
 description: "Build symbol environments, resolve names across nested scopes, and enforce declaration/visibility rules."
 tag: "SEMANTICS"
 chapterTitle: "Symbol Tables and Scope Resolution"
+showInCourse: false
 ---

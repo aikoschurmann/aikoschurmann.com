@@ -6,4 +6,5 @@ author: "Aiko Schurmann"
 description: "Validate type consistency, propagate constraints, and reject semantically invalid operations before lowering."
 tag: "SEMANTICS"
 chapterTitle: "Type Checking and Constraint Solving"
+showInCourse: false
 ---

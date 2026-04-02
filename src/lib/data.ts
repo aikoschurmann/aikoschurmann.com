@@ -125,6 +125,7 @@ type CourseMeta = {
 type SectionMeta = {
   title?: string;
   description?: string;
+  showInCourse?: boolean;
 };
 
 function asObject(value: unknown): Record<string, unknown> | undefined {
@@ -150,7 +151,8 @@ function normalizeSectionMeta(value: unknown): SectionMeta {
 
   return {
     title: typeof obj.title === 'string' ? obj.title : undefined,
-    description: typeof obj.description === 'string' ? obj.description : undefined
+    description: typeof obj.description === 'string' ? obj.description : undefined,
+    showInCourse: typeof obj.showInCourse === 'boolean' ? obj.showInCourse : undefined
   };
 }
 
@@ -223,6 +225,7 @@ export const thoughts = Object.entries(rawModules).map(([path, raw]) => {
   const date = getMetaString(meta, 'date') || '';
   const showOnHome = meta.showOnHome !== false;
   const showInBlog = isBlogPost ? meta.showInBlog !== false : false;
+  const showInCourse = meta.showInCourse !== false;
 
   return {
     title,
@@ -235,6 +238,7 @@ export const thoughts = Object.entries(rawModules).map(([path, raw]) => {
     tag: getTagData(tagName),
     showOnHome,
     showInBlog,
+    showInCourse,
     courseSlug: courseMeta?.courseSlug,
     courseSectionSegment: courseMeta?.courseSectionSegment,
     courseSectionTitle: courseMeta?.courseSectionTitle,
@@ -283,7 +287,7 @@ type CourseSourcePost = Thought & {
 };
 
 function isCourseSourcePost(thought: Thought): thought is CourseSourcePost {
-  return typeof thought.courseSlug === 'string' && thought.courseSlug.length > 0;
+  return typeof thought.courseSlug === 'string' && thought.courseSlug.length > 0 && thought.showInCourse !== false;
 }
 
 function compareCoursePosts(a: CourseSourcePost, b: CourseSourcePost): number {
@@ -336,6 +340,11 @@ export const courses: Course[] = Array.from(courseBuckets.entries())
     for (const post of sortedPosts) {
       const sectionKeyRaw = post.courseSectionSegment ? `${slug}/${post.courseSectionSegment}` : undefined;
       const sectionMeta = sectionKeyRaw ? sectionMetaByKey.get(sectionKeyRaw) : undefined;
+
+      if (sectionMeta?.showInCourse === false) {
+        continue;
+      }
+
       const sectionTitle = sectionMeta?.title || post.courseSectionTitle || 'Course';
       const sectionOrder = post.courseSectionOrder ?? 999;
       const sectionKey = `${String(sectionOrder).padStart(3, '0')}:${sectionTitle}`;

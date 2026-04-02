@@ -6,4 +6,5 @@ author: "Aiko Schurmann"
 description: "Compare top-down and bottom-up parser families, lookahead constraints, and common conflict patterns."
 tag: "PARSING"
 chapterTitle: "LL and LR Parsing Strategies"
+showInCourse: false
 ---
