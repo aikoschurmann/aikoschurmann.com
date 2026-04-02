@@ -162,7 +162,7 @@ This chapter explored the transition from theory to implementation:
 - **Subset Construction** eliminates the "guessing" of NFAs by tracking all possibilities simultaneously, creating a DFA.
 - **Minimization** cleans up the result, producing the most efficient possible recognizer.
 
-In the next chapter, we will see how these minimized DFAs are transformed into actual source code (like Zig or C) to build a high-performance lexer.
+In the next chapter, we will see a more powerful version of DFAs namely pushdown automata, which can recognize context-free languages and are essential for parsing. 
 
 
 ## 4.6 Exercises
