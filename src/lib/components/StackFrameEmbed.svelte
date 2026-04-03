@@ -188,18 +188,19 @@
 
   @media (max-width: 600px) {
     .stack-container {
-      padding-right: 40px;
+      padding: 0 40px;
     }
     .stack-slot {
       padding: 1rem;
       flex-direction: column;
-      align-items: flex-start;
+      align-items: center;
+      text-align: center;
       justify-content: center;
       gap: 0.2rem;
       min-height: 4.5rem;
     }
     .pointers-container {
-      right: 0px;
+      right: 6px;
     }
   }
 </style>
