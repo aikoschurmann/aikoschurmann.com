@@ -1,4 +1,0 @@
-{
-  "title": "Parsing and Syntax",
-  "description": "Implement parsing mechanics over token streams: LL/LR strategy trade-offs, parse-to-AST transformation, and syntax-error recovery."
-}

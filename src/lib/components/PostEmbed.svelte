@@ -31,7 +31,9 @@
     <div class="post-meta">
       <span>{post.date}</span>
       <span>{post.readTime}</span>
-      <span class="post-tag" style={post.tag.style}>{post.tag.name}</span>
+      {#each post.tags as tag}
+        <span class="post-tag" style={tag.style}>{tag.name}</span>
+      {/each}
     </div>
   </div>
 {:else}

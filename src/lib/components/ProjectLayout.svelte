@@ -16,10 +16,10 @@
       return {
         ...item,
         title: match?.title ?? item.title,
-        tag: match?.tag ?? {
+        tags: match?.tags ?? [{
           name: 'RESEARCH',
           style: 'color: var(--fg-muted); background: rgba(255, 255, 255, 0.05);'
-        }
+        }]
       };
     })
   );
@@ -111,7 +111,9 @@
                     <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
                   </svg>
                 </div>
-                <span class="research-tag" style={item.tag.style}>{item.tag.name}</span>
+                {#each item.tags as tag}
+                  <span class="research-tag" style={tag.style}>{tag.name}</span>
+                {/each}
               </div>
             </a>
           </li>

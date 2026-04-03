@@ -32,11 +32,9 @@ body {
   padding: 2rem 1.5rem;
 }
 
-.container.container-project-detail {
-  max-width: 1400px;
-}
-
-.container.container-blog-detail {
+.container.container-project-detail,
+.container.container-blog-detail,
+.container.container-course-detail {
   max-width: 1400px;
 }
 

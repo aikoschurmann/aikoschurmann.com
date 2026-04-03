@@ -4,7 +4,9 @@ title: "Finite Automata: NFA and DFA"
 date: "2026-04-02"
 author: "Aiko Schurmann"
 description: "Model recognition with nondeterministic and deterministic automata, and compare their construction and runtime behavior."
-tag: "AUTOMATA"
+tags:
+  - "AUTOMATA"
+  - "Optional"
 chapterTitle: "Finite Automata: NFA and DFA"
 ---
 
@@ -35,7 +37,7 @@ $$\text{Regular expression} \;\Leftrightarrow\; \text{NFA} \;\Leftrightarrow\; \
 This equivalence is not just theoretically satisfying. It drives the practical pipeline used by every lexer generator:
 
 ```
-Regular expression  →  NFA  →  DFA  →  Minimized DFA  →  Lexer code
+Regular expression  →  NFA  →  DFA  →  Minimized DFA  →  lexer code
 ```
 
 Understanding each step — and why we bother with NFAs at all — is the goal of this chapter.
@@ -227,7 +229,7 @@ where:
 Here $\mathcal{P}(Q)$ is the power set of $Q$ — the set of all subsets of $Q$. So $\Delta(q, a)$ returns a **set** of states (possibly empty), not a single state.
 
 **Key differences from a DFA**:
-- $\Delta(q, a)$ may return the empty set (dead end), a single state, or multiple states
+- $\Delta(q, a)$ may return $\emptyset$ (dead end), a single state, or multiple states
 - $\Delta(q, \epsilon)$ may be nonempty — $\epsilon$-transitions move "for free"
 
 ### 3.4.3 Epsilon-Closure
@@ -380,7 +382,7 @@ We will study these algorithms in full detail in **Chapter 4**.
 
 ## 3.7 Finite Automata in Lexical Analysis
 
-### 3.7.1 The Lexer Generation Pipeline
+### 3.7.1 The lexer Generation Pipeline
 
 The journey from a programmer's intent to a running scanner follows a strict, automated pipeline:
 
@@ -464,7 +466,7 @@ c. Strings over $\{a, b\}$ where the third-to-last character is `a`
 
 **8.** Given that NFAs can be exponentially more compact than DFAs, argue both for and against using NFAs directly as lexer implementations (without converting to DFA first).
 
-### Lexer Pipeline
+### lexer Pipeline
 
 **9.** Describe what happens step-by-step when a lexer generator compiles the following token specification. What does each phase of the pipeline produce?
 
@@ -490,6 +492,4 @@ d. `ifcount`
 
 ### Advanced
 
-**12.** **Product Construction**: Use the product DFA construction (from Chapter 2, closure under intersection) to build a DFA that recognizes strings over $\{a,b\}$ that both have even length and contain at least one `a`. Give the full transition table.
-
-**13.** **Theoretical**: Prove that if $L$ is a regular language recognized by an $n$-state DFA, then either $L$ is finite or $L$ is infinite and contains a string of length between $n$ and $2n$. (Hint: consider what happens when you trace a path of length exactly $n$ through the DFA.)
+**12.** **Theoretical**: Prove that if $L$ is a regular language recognized by an $n$-state DFA, then either $L$ is finite or $L$ is infinite and contains a string of length between $n$ and $2n$. (Hint: consider what happens when you trace a path of length exactly $n$ through the DFA.)

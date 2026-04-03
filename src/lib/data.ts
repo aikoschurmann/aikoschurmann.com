@@ -21,17 +21,12 @@ const rawBlogModules = import.meta.glob('/src/routes/blog/*/+page.md', {
   import: 'default',
   eager: true
 });
-const rawCourseLessonModules = import.meta.glob('/src/routes/courses/*/*/*/+page.md', {
+const rawCourseLessonModules = import.meta.glob('/src/routes/courses/*/*/+page.md', {
   query: '?raw',
   import: 'default',
   eager: true
 });
-const rawCourseMetaModules = import.meta.glob('/src/routes/courses/*/course.json', {
-  import: 'default',
-  eager: true
-});
-const rawSectionMetaModules = import.meta.glob('/src/routes/courses/*/*/section.json', {
-  import: 'default',
+const courseModules = import.meta.glob('/src/routes/courses/*/course.md', {
   eager: true
 });
 const rawModules = { ...rawBlogModules, ...rawCourseLessonModules };
@@ -43,12 +38,31 @@ function parseFrontmatter(raw: string) {
   const meta: Record<string, unknown> = {};
   const lines = match[1].split('\n');
 
+  let currentArrayKey: string | null = null;
+
   for (const line of lines) {
+    const arrayItemMatch = line.match(/^\s*-\s*['"]?(.*?)['"]?\s*$/);
+    if (arrayItemMatch && currentArrayKey) {
+      (meta[currentArrayKey] as string[]).push(arrayItemMatch[1].trim());
+      continue;
+    }
+
     const pair = line.match(/^([A-Za-z0-9_]+):\s*(.*)$/);
-    if (!pair) continue;
+    if (!pair) {
+      currentArrayKey = null;
+      continue;
+    }
 
     const key = pair[1];
     let value = pair[2].trim();
+
+    if (value === '') {
+      meta[key] = [];
+      currentArrayKey = key;
+      continue;
+    }
+
+    currentArrayKey = null;
 
     if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
       value = value.slice(1, -1);
@@ -118,12 +132,7 @@ type CourseMeta = {
   title?: string;
   description?: string;
   tags?: string[];
-};
-
-type SectionMeta = {
-  title?: string;
-  description?: string;
-  showInCourse?: boolean;
+  component?: any;
 };
 
 function asObject(value: unknown): Record<string, unknown> | undefined {
@@ -149,31 +158,15 @@ function normalizeCourseMeta(value: unknown): CourseMeta {
   };
 }
 
-function normalizeSectionMeta(value: unknown): SectionMeta {
-  const obj = asObject(value);
-  if (!obj) return {};
-
-  return {
-    title: typeof obj.title === 'string' ? obj.title : undefined,
-    description: typeof obj.description === 'string' ? obj.description : undefined,
-    showInCourse: typeof obj.showInCourse === 'boolean' ? obj.showInCourse : undefined
-  };
-}
-
 const courseMetaBySlug = new Map<string, CourseMeta>();
-for (const [path, value] of Object.entries(rawCourseMetaModules)) {
-  const match = path.match(/\/src\/routes\/courses\/([^/]+)\/course\.json$/);
+for (const [path, module] of Object.entries(courseModules)) {
+  const match = path.match(/\/src\/routes\/courses\/([^/]+)\/course\.md$/);
   if (!match) continue;
 
-  courseMetaBySlug.set(match[1], normalizeCourseMeta(value));
-}
-
-const sectionMetaByKey = new Map<string, SectionMeta>();
-for (const [path, value] of Object.entries(rawSectionMetaModules)) {
-  const match = path.match(/\/src\/routes\/courses\/([^/]+)\/([^/]+)\/section\.json$/);
-  if (!match) continue;
-
-  sectionMetaByKey.set(`${match[1]}/${match[2]}`, normalizeSectionMeta(value));
+  const m = module as any;
+  const meta = normalizeCourseMeta(m.metadata);
+  meta.component = m.default;
+  courseMetaBySlug.set(match[1], meta);
 }
 
 function parseOrderedSegment(segment: string) {
@@ -195,19 +188,14 @@ function parseOrderedSegment(segment: string) {
 
 function getCoursePathMeta(url: string) {
   const segments = url.split('/').filter(Boolean);
-  if (segments.length !== 4 || segments[0] !== 'courses') return undefined;
+  if (segments[0] !== 'courses' || segments.length < 3) return undefined;
 
   const courseSlug = segments[1];
-  const section = parseOrderedSegment(segments[2]);
-  const lesson = parseOrderedSegment(segments[3]);
+  const lesson = parseOrderedSegment(segments[2]);
 
   return {
     courseSlug,
     courseTitle: slugToTitle(courseSlug),
-    courseSectionSegment: segments[2],
-    courseSectionSlug: section.slug,
-    courseSectionTitle: section.title,
-    courseSectionOrder: section.order,
     courseLessonSlug: lesson.slug,
     courseLessonTitle: lesson.title,
     courseLessonOrder: lesson.order
@@ -222,7 +210,16 @@ export const thoughts = Object.entries(rawModules).map(([path, raw]) => {
   const isBlogPost = url.startsWith('/blog/');
   const readingStats = getReadingStats(rawContent);
 
-  const tagName = getMetaString(meta, 'tag') || 'RESEARCH';
+  let rawTags: string[] = [];
+  if (Array.isArray(meta.tags)) {
+    rawTags = meta.tags.filter((t) => typeof t === 'string') as string[];
+  } else if (typeof meta.tag === 'string') {
+    rawTags = [meta.tag];
+  } else {
+    const singleTag = getMetaString(meta, 'tag');
+    rawTags = singleTag ? [singleTag] : ['RESEARCH'];
+  }
+
   const title = getMetaString(meta, 'title') || 'Untitled Thought';
   const description = getMetaString(meta, 'description') || '';
   const date = getMetaString(meta, 'date') || '';
@@ -238,14 +235,11 @@ export const thoughts = Object.entries(rawModules).map(([path, raw]) => {
     readTime: `${readingStats.readMinutes} MIN READ`,
     readMinutes: readingStats.readMinutes,
     readWordCount: readingStats.effectiveWords,
-    tag: getTagData(tagName),
+    tags: rawTags.map(getTagData),
     showOnHome,
     showInBlog,
     showInCourse,
     courseSlug: courseMeta?.courseSlug,
-    courseSectionSegment: courseMeta?.courseSectionSegment,
-    courseSectionTitle: courseMeta?.courseSectionTitle,
-    courseSectionOrder: courseMeta?.courseSectionOrder,
     courseLessonOrder: courseMeta?.courseLessonOrder,
     courseChapterTitle: getMetaString(meta, 'chapterTitle') || courseMeta?.courseLessonTitle
   };
@@ -257,19 +251,7 @@ export type Thought = (typeof thoughts)[number];
 
 export type CoursePost = Thought & {
   part: number;
-  partInSection: number;
-  sectionIndex: number;
-  sectionTitle: string;
   chapterTitle?: string;
-};
-
-export type CourseSection = {
-  index: number;
-  title: string;
-  description?: string;
-  posts: CoursePost[];
-  postCount: number;
-  totalReadMinutes: number;
 };
 
 export type Course = {
@@ -277,10 +259,10 @@ export type Course = {
   title: string;
   description: string;
   tags: ReturnType<typeof getTagData>[];
-  sections: CourseSection[];
   posts: CoursePost[];
   postCount: number;
   totalReadMinutes: number;
+  component?: any;
 };
 
 type CourseSourcePost = Thought & {
@@ -292,10 +274,6 @@ function isCourseSourcePost(thought: Thought): thought is CourseSourcePost {
 }
 
 function compareCoursePosts(a: CourseSourcePost, b: CourseSourcePost): number {
-  const aSectionOrder = a.courseSectionOrder ?? Number.MAX_SAFE_INTEGER;
-  const bSectionOrder = b.courseSectionOrder ?? Number.MAX_SAFE_INTEGER;
-  if (aSectionOrder !== bSectionOrder) return aSectionOrder - bSectionOrder;
-
   const aLessonOrder = a.courseLessonOrder ?? Number.MAX_SAFE_INTEGER;
   const bLessonOrder = b.courseLessonOrder ?? Number.MAX_SAFE_INTEGER;
   if (aLessonOrder !== bLessonOrder) return aLessonOrder - bLessonOrder;
@@ -329,88 +307,31 @@ export const courses: Course[] = Array.from(courseBuckets.entries())
     const rawTags = courseMeta?.tags && courseMeta.tags.length > 0 ? courseMeta.tags : ['COMPILERS'];
     const courseTags = rawTags.map(getTagData);
 
-    const sectionMap = new Map<
-      string,
-      {
-        title: string;
-        order: number;
-        description?: string;
-        posts: CourseSourcePost[];
-      }
-    >();
-
-    for (const post of sortedPosts) {
-      const sectionKeyRaw = post.courseSectionSegment ? `${slug}/${post.courseSectionSegment}` : undefined;
-      const sectionMeta = sectionKeyRaw ? sectionMetaByKey.get(sectionKeyRaw) : undefined;
-
-      if (sectionMeta?.showInCourse === false) {
-        continue;
-      }
-
-      const sectionTitle = sectionMeta?.title || post.courseSectionTitle || 'Course';
-      const sectionOrder = post.courseSectionOrder ?? 999;
-      const sectionKey = `${String(sectionOrder).padStart(3, '0')}:${sectionTitle}`;
-      const existing = sectionMap.get(sectionKey);
-
-      if (existing) {
-        existing.posts.push(post);
-      } else {
-        sectionMap.set(sectionKey, {
-          title: sectionTitle,
-          order: sectionOrder,
-          description: sectionMeta?.description,
-          posts: [post]
-        });
-      }
-    }
-
     let globalPart = 0;
-    const sections: CourseSection[] = Array.from(sectionMap.values())
-      .sort((a, b) => a.order - b.order || a.title.localeCompare(b.title))
-      .map((section, sectionIndex) => {
-        const sectionPosts = [...section.posts]
-          .sort(compareCoursePosts)
-          .map((post, index) => {
-            globalPart += 1;
-            return {
-              ...post,
-              part: globalPart,
-              partInSection: index + 1,
-              sectionIndex: sectionIndex + 1,
-              sectionTitle: section.title,
-              chapterTitle: post.courseChapterTitle
-            };
-          });
+    const posts = sortedPosts.map(post => {
+      globalPart += 1;
+      return {
+        ...post,
+        part: globalPart,
+        chapterTitle: post.courseChapterTitle
+      }
+    });
 
-        const sectionWordCount = sectionPosts.reduce((sum, post) => sum + post.readWordCount, 0);
-        const sectionReadMinutes = Math.max(1, Math.ceil(sectionWordCount / 225));
-
-        return {
-          index: sectionIndex + 1,
-          title: section.title,
-          description: section.description,
-          posts: sectionPosts,
-          postCount: sectionPosts.length,
-          totalReadMinutes: sectionReadMinutes
-        };
-      });
-
-    const posts = sections.flatMap((section) => section.posts);
     const totalWordCount = posts.reduce((sum, post) => sum + post.readWordCount, 0);
     const totalReadMinutes = Math.max(1, Math.ceil(totalWordCount / 225));
     const description =
       courseMeta?.description ||
-      `A structured track with ${posts.length} lessons across ${sections.length} sections.`;
+      `A structured track with ${posts.length} lessons.`;
 
     return {
       slug,
       title,
       description,
       tags: courseTags,
-      sections,
       posts,
       postCount: posts.length,
-      totalReadMinutes
+      totalReadMinutes,
+      component: courseMeta?.component
     };
   })
   .sort((a, b) => a.title.localeCompare(b.title));

@@ -23,4 +23,6 @@ export const tagColors: Record<string, TagStyle> = {
   '4.0 GB/S': { color: '#fbbf24', bg: 'rgba(251, 191, 36, 0.1)' },
   SECURITY: { color: '#f87171', bg: 'rgba(248, 113, 113, 0.1)' },
   BEGINNER: { color: '#4ade80', bg: 'rgba(74, 222, 128, 0.1)' },
+  Core: { color: '#818cf8', bg: 'rgba(129, 140, 248, 0.12)' },
+  Optional: { color: '#94a3b8', bg: 'rgba(148, 163, 184, 0.1)' },
 };

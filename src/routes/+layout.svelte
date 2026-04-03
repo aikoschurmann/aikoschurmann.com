@@ -5,8 +5,10 @@
 
   let { children } = $props();
   const pathSegments = $derived(page.url.pathname.split('/').filter(Boolean));
+  
+  // FIXED: Changed from >= 4 to >= 3 so course chapters are correctly identified
   const isCourseLessonPage = $derived(
-    pathSegments.length >= 4 && pathSegments[0] === 'courses'
+    pathSegments.length >= 3 && pathSegments[0] === 'courses'
   );
 
   const seoData = $derived.by(() => {
@@ -73,8 +75,11 @@
     page.url.pathname.startsWith('/projects/') ||
     page.url.pathname.startsWith('/courses/')
   );
+
   const isBlogDetailPage = $derived(page.url.pathname.startsWith('/blog/') || isCourseLessonPage);
   const isProjectDetailPage = $derived(page.url.pathname.startsWith('/projects/'));
+  const isCourseDetailPage = $derived(page.url.pathname.startsWith('/courses/') && !isCourseLessonPage && page.url.pathname !== '/courses');
+  
   const isProjectPage = $derived(
     page.url.pathname === '/projects' || page.url.pathname.startsWith('/projects/')
   );
@@ -112,7 +117,6 @@
     <meta property="og:site_name" content="Aiko Schurmann" />
     <meta property="og:type" content="website" />
 
-    <!-- X/Twitter cards work without a Twitter account -->
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content={seoData.title} />
     <meta name="twitter:description" content={seoData.description} />
@@ -121,7 +125,11 @@
   <script type="application/ld+json">{personJsonLd}</script>
 </svelte:head>
 
-<div class="container" class:container-blog-detail={isBlogDetailPage} class:container-project-detail={isProjectDetailPage}>
+<div class="container" 
+  class:container-blog-detail={isBlogDetailPage} 
+  class:container-project-detail={isProjectDetailPage}
+  class:container-course-detail={isCourseDetailPage}
+>
   <header class="site-header">
     <nav class="dock">
       <a href="/" class="nav-item" data-tooltip="Home" aria-label="Home" title="Home">

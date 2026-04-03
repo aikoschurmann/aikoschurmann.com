@@ -1,5 +1,0 @@
-{
-  "title": "Compilers 101",
-  "description": "A practical compiler front-end course covering pipeline fundamentals, BNF grammar design, lexing, arena-backed interning, and recursive-descent parsing.",
-  "tags": ["COMPILERS", "AUTOMATA"]
-}

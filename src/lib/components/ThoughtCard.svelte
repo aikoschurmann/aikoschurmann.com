@@ -10,7 +10,7 @@
     description: string;
     date: string;
     readTime: string;
-    tag: ThoughtTag;
+    tags: ThoughtTag[];
   };
 
   let { thought, href } = $props<{ thought: ThoughtCardData; href?: string }>();
@@ -38,6 +38,8 @@
   <div class="post-meta">
     <span>{thought.date}</span>
     <span>{thought.readTime}</span>
-    <span class="post-tag" style={thought.tag.style}>{thought.tag.name}</span>
+    {#each thought.tags as tag}
+      <span class="post-tag" style={tag.style}>{tag.name}</span>
+    {/each}
   </div>
 </a>

@@ -1,4 +1,0 @@
-{
-  "title": "Compiler Foundations",
-  "description": "Establish the core mental model: what compilation is, how phases compose, and the contracts between front-end and back-end stages."
-}

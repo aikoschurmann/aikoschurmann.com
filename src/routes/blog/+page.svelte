@@ -3,13 +3,13 @@
   import ProfileSidebar from '$lib/components/ProfileSidebar.svelte';
   import ThoughtCard from '$lib/components/ThoughtCard.svelte';
 
-  const uniqueTags = ['All', ...new Set(blogThoughts.map(t => t.tag.name))];
+  const uniqueTags = ['All', ...new Set(blogThoughts.flatMap(t => t.tags.map(tag => tag.name)))];
   let activeFilter = $state('All');
   
   const filteredThoughts = $derived(
     activeFilter === 'All' 
       ? blogThoughts
-      : blogThoughts.filter(t => t.tag.name === activeFilter)
+      : blogThoughts.filter(t => t.tags.some(tag => tag.name === activeFilter))
   );
 </script>
 

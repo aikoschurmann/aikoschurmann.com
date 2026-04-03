@@ -1,4 +1,0 @@
-{
-  "title": "Semantic Analysis and Validation",
-  "description": "Resolve names and scopes, enforce type rules, emit actionable diagnostics, and prepare semantically valid inputs for IR lowering."
-}

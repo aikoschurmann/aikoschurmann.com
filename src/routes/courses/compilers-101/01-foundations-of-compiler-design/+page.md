@@ -4,9 +4,15 @@ title: "Foundations of Compiler Design"
 date: "2026-04-01"
 author: "Aiko Schurmann"
 description: "A comprehensive introduction to compiler structure, function, and the fundamental phases of translation from high-level source code to executable programs."
-tag: "COMPILERS"
+tags:
+  - "COMPILERS"
+  - "Core"
 chapterTitle: "Foundations of Compiler Design"
 ---
+
+<script>
+  import StackFrameEmbed from '$lib/components/StackFrameEmbed.svelte';
+</script>
 
 ## 1.1 Learning Objectives
 By the end of this chapter, you should be able to:
@@ -17,6 +23,7 @@ By the end of this chapter, you should be able to:
 - Distinguish between lexical analysis and syntactic analysis
 - Trace the transformation of a simple program through the front-end compilation phases
 - Recognize the relationship between compiler phases and natural language processing
+- Understand how stack frames organize variables and control flow during function execution
 
 ## 1.2 What Is a Compiler?
 ### 1.2.1 Definition and Purpose
@@ -170,7 +177,7 @@ Syntax analysis (or parsing) is the second phase of compilation. The parser read
 Two related tree forms are important:
 
 - Parse tree (Concrete Syntax Tree, CST): preserves full grammatical structure, including syntactic tokens such as delimiters and grouping symbols.
-- Abstract Syntax Tree (AST): removes syntactic noise and keeps only semantically relevant structure.
+- abstract syntax tree (AST): removes syntactic noise and keeps only semantically relevant structure.
 
 Production compilers usually use ASTs for later phases, while parse trees are mainly useful for debugging, pedagogy, or grammar tooling.
 
@@ -266,7 +273,7 @@ The lexer produces:
 
 Now we have categorized lexical units, but no structural information. We know `int` is a keyword and `x` is an identifier, but we do not yet know how they relate.
 
-#### Step 3: Abstract Syntax Tree (after parsing)
+#### Step 3: abstract syntax tree (after parsing)
 
 The parser builds this tree structure:
 
@@ -572,6 +579,25 @@ int add(int a, int b) {
 is not just an `add` instruction. Depending on target and optimization level, the generated code must still respect calling-convention rules for argument passing, return registers, and stack alignment.
 
 This is why code generation is often split into multiple passes: instruction selection, register allocation, and final emission/assembly. By the end of this phase, compiler output is directly executable by the target runtime environment.
+
+### 1.9.5 Stack Frames and Variable Layout
+
+When the compiler generates code for a function, it must manage where local variables, arguments, and return addresses are stored. This structured memory is called a **stack frame** (or activation record). Every function call allocates a new frame on the call stack, and every return deallocates it.
+
+Consider a simple function `int add(int a, int b)` that uses a local variable to hold the sum before returning it. 
+
+The stack frame provides concrete addresses for these conceptual variables. The layout depends on the target architecture and its **calling convention**—the agreed-upon rules for how functions interact.
+
+A typical architecture-neutral stack layout might look like this:
+
+<StackFrameEmbed />
+
+The calling convention determines:
+- **Where arguments live**: On older architectures (like 32-bit x86), arguments are pushed onto the stack. On modern architectures like x86-64 and ARM64, the first few arguments are passed in hardware registers (e.g., `rdi`, `rsi` in x86-64, or `x0`, `x1` in ARM64) to improve speed. The stack is only used if there are too many arguments.
+- **Who cleans up**: Either the caller or the callee is responsible for popping arguments off the stack.
+- **Alignment**: The stack pointer often must be aligned to a 16-byte boundary before a call. The compiler inserts padding (empty space) to ensure this, avoiding hardware penalties or crashes.
+
+Understanding the stack frame is crucial for code generation. When the compiler sees `sum = a + b`, it translates these variable names into memory offsets relative to the frame pointer (e.g., `[rbp - 4]`), mapping abstract scope into physical execution.
 
 ## 1.10 Historical Context: How Compiler Design Evolved
 
