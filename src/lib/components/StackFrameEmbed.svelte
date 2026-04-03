@@ -1,5 +1,15 @@
 <script lang="ts">
-  const stackItems = [
+  interface StackItem {
+    label: string;
+    note?: string;
+    type: 'caller' | 'control' | 'local' | 'empty';
+    isFp?: boolean;
+    isSp?: boolean;
+  }
+
+  let { items = [] } = $props<{ items?: StackItem[] }>();
+
+  const defaultItems: StackItem[] = [
     { label: 'Argument b', note: 'Pushed by caller', type: 'caller' },
     { label: 'Argument a', note: '', type: 'caller' },
     { label: 'Return Address', note: 'Instruction to resume after call', type: 'control' },
@@ -7,30 +17,33 @@
     { label: 'Local: sum', note: '', type: 'local', isFp: true },
     { label: '(Free space)', note: '', type: 'empty', isSp: true }
   ];
+
+  const stackItems = $derived(items.length > 0 ? items : defaultItems);
 </script>
 
 <div class="stack-embed">
 	<div class="memory-label top">Higher memory addresses</div>
 	
-	<div class="stack-wrapper">
+	<div class="stack-container">
 		<div class="stack">
 			{#each stackItems as item}
-        {#if item.isFp}
-          <div class="pointer-line">
-            <span class="pointer-label">← Frame Pointer (Base of frame)</span>
+				<div class="stack-row">
+          <div class="stack-slot {item.type}">
+            <span class="slot-label">{item.label}</span>
+            {#if item.note}
+              <span class="slot-note">({item.note})</span>
+            {/if}
           </div>
-        {/if}
-        {#if item.isSp}
-          <div class="pointer-line">
-            <span class="pointer-label">← Stack Pointer (Top of stack)</span>
+          
+          <div class="pointers-container">
+            {#if item.isFp}
+              <div class="pointer-badge fp" title="Frame Pointer">FP</div>
+            {/if}
+            {#if item.isSp}
+              <div class="pointer-badge sp" title="Stack Pointer">SP</div>
+            {/if}
           </div>
-        {/if}
-				<div class="stack-slot {item.type}">
-					<span class="slot-label">{item.label}</span>
-					{#if item.note}
-						<span class="slot-note">({item.note})</span>
-					{/if}
-				</div>
+        </div>
 			{/each}
 		</div>
 	</div>
@@ -40,10 +53,10 @@
 
 <style>
 	.stack-embed {
-		margin: 2rem 0;
-		padding: 1.5rem;
-		border: 1px solid color-mix(in srgb, var(--border) 85%, transparent);
-		border-radius: 8px;
+		margin: 3.5rem 0;
+		padding: 2.5rem 1.5rem;
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 16px;
 		background: rgba(255, 255, 255, 0.01);
 		display: flex;
 		flex-direction: column;
@@ -52,25 +65,26 @@
 	}
 
 	.memory-label {
-		font-size: 0.75rem;
-		color: var(--fg-muted);
+		font-size: 0.65rem;
+		color: #fff;
 		text-transform: uppercase;
-		letter-spacing: 0.05em;
+		letter-spacing: 0.12em;
 		padding: 0.5rem;
+    opacity: 0.9;
 	}
 
 	.memory-label.bottom {
-		margin-top: 0.5rem;
+		margin-top: 1.5rem;
 	}
     
   .memory-label.top {
-      margin-bottom: 0.5rem;
+      margin-bottom: 1.5rem;
   }
 
-	.stack-wrapper {
-		display: flex;
+	.stack-container {
 		width: 100%;
-		max-width: 500px;
+		max-width: 440px;
+    margin: 0 auto;
     position: relative;
 	}
 
@@ -78,20 +92,29 @@
 		display: flex;
 		flex-direction: column;
 		width: 100%;
-		border-left: 2px solid rgba(255, 255, 255, 0.2);
-		border-right: 2px solid rgba(255, 255, 255, 0.2);
+    align-items: center;
 	}
 
+  .stack-row {
+    position: relative;
+    width: 100%;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: center;
+  }
+
 	.stack-slot {
-		height: 3.2rem;
+		min-height: 3.8rem;
+    width: 100%;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding: 0 1rem;
-		border-top: 1px solid rgba(255, 255, 255, 0.1);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    margin-top: -1px;
-		font-size: 0.85rem;
+		padding: 0 1.5rem;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+		font-size: 0.9rem;
+    transition: all 0.2s ease;
 	}
 
 	.slot-label {
@@ -102,80 +125,81 @@
 	.slot-note {
 		color: var(--fg-muted);
 		font-size: 0.75rem;
+    opacity: 0.7;
 	}
 
 	.stack-slot.caller {
-		background: rgba(255, 255, 255, 0.03);
+		background: rgba(255, 255, 255, 0.05);
 	}
 
 	.stack-slot.control {
-		background: color-mix(in srgb, var(--accent) 15%, transparent);
-		border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+		background: rgba(59, 130, 246, 0.05);
+		border-color: rgba(59, 130, 246, 0.15);
 	}
   .stack-slot.control .slot-label {
-      color: color-mix(in srgb, var(--accent) 80%, white);
+      color: #bfdbfe;
   }
 
 	.stack-slot.local {
-		background: rgba(34, 197, 94, 0.1);
-		border-color: rgba(34, 197, 94, 0.2);
+		background: rgba(34, 197, 94, 0.04);
+		border-color: rgba(34, 197, 94, 0.15);
 	}
   .stack-slot.local .slot-label {
-      color: rgba(74, 222, 128, 1);
+      color: #bbf7d0;
   }
 
 	.stack-slot.empty {
 		background: transparent;
 		border-style: dashed;
-    border-bottom: none;
+    border-color: rgba(255, 255, 255, 0.1);
+    opacity: 0.4;
 	}
   .stack-slot.empty .slot-label {
       color: var(--fg-muted);
       font-style: italic;
   }
 
-	.pointer-line {
-		height: 0;
-		position: relative;
-		width: 100%;
-    z-index: 10;
-	}
+  .pointers-container {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: -45px;
+    width: 35px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+  }
 
-	.pointer-label {
-		position: absolute;
-		right: -250px;
-		top: -0.5rem;
-		font-size: 0.75rem;
-		color: var(--accent);
-		font-weight: 600;
-		white-space: nowrap;
-	}
+  .pointer-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 20px;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: 900;
+    color: #000;
+  }
 
-  @media (max-width: 900px) {
-    .pointer-label {
-      right: -200px;
-      font-size: 0.65rem;
+  .pointer-badge.fp { background: #fbbf24; }
+  .pointer-badge.sp { background: #f87171; }
+
+  @media (max-width: 600px) {
+    .stack-container {
+      padding-right: 40px;
     }
-  }
-
-  @media (max-width: 768px) {
-      .stack-slot {
-          flex-direction: column;
-          align-items: flex-start;
-          justify-content: center;
-          height: auto;
-          padding: 0.75rem 1rem;
-          gap: 0.25rem;
-      }
-      .pointer-label {
-          right: auto;
-          left: 100%;
-          padding-left: 0.5rem;
-      }
-  }
-  @media (max-width: 500px) {
-      .pointer-label {
-        display: none; /* Might be too cramped */
-      }
+    .stack-slot {
+      padding: 1rem;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 0.2rem;
+      min-height: 4.5rem;
+    }
+    .pointers-container {
+      right: 0px;
+    }
   }
 </style>

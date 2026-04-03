@@ -18,13 +18,7 @@
   let expandedSections = $state<Record<string, boolean>>({});
 
   function toggleSection(id: string, force?: boolean) {
-    // Initialize if not present based on DOM presence or defaults
-    if (expandedSections[id] === undefined) {
-      // We assume it was open if it wasn't in the state yet (default behavior)
-      expandedSections[id] = force !== undefined ? force : false;
-    } else {
-      expandedSections[id] = force !== undefined ? force : !expandedSections[id];
-    }
+    expandedSections[id] = force !== undefined ? force : !expandedSections[id];
   }
 
   // Svelte 5 reactive context
@@ -35,7 +29,6 @@
   });
 
   async function navigateToHeading(headingId: string) {
-    // 1. If it's a chapter, we need to ensure its parent section is open
     const chapterEl = document.getElementById(headingId);
     if (chapterEl?.classList.contains('course-chapter-link')) {
       const parentSection = chapterEl.closest('.course-section');
@@ -43,7 +36,7 @@
         const sectionId = parentSection.id.replace('section-', '');
         if (!expandedSections[sectionId]) {
           toggleSection(sectionId, true);
-          await tick(); // Wait for DOM to expand
+          await tick();
         }
       }
     }
@@ -186,9 +179,17 @@
   }
 
   onMount(() => {
+    // Force initialize all sections as expanded
+    const sectionEls = document.querySelectorAll('.course-section');
+    const initialState: Record<string, boolean> = {};
+    sectionEls.forEach(el => {
+      const id = el.id.replace('section-', '');
+      initialState[id] = true;
+    });
+    expandedSections = initialState;
+
     updateTOCHeadings();
 
-    // 2. Track section by scroll position
     const activationOffset = 180;
     const updateActiveHeading = () => {
       const elements = Array.from(document.querySelectorAll<HTMLElement>('#introduction, .course-section, .course-chapter-link'));
@@ -201,8 +202,7 @@
 
       let currentId = elements[0].id || 'introduction';
       for (const el of elements) {
-        // Skip hidden chapters (those in closed sections)
-        if (el.offsetParent === null) continue;
+        if (el.offsetParent === null && !el.classList.contains('toc-link')) continue;
 
         if (el.getBoundingClientRect().top <= activationOffset) {
           currentId = el.id || 'introduction';
@@ -242,7 +242,6 @@
     window.addEventListener('resize', onScrollOrResize);
     window.addEventListener('keydown', onGlobalKeydown);
 
-    // Watch for DOM changes (like sections expanding) to update TOC list
     const observer = new MutationObserver(() => {
       updateTOCHeadings();
     });
@@ -293,7 +292,6 @@
       {/if}
     </header>
 
-    <!-- The markdown file completely dictates the rest of the course page layout -->
     {#if course.component}
       {@const Content = course.component}
       <div class="course-md-content prose">
@@ -302,7 +300,6 @@
     {/if}
   </div>
 
-  <!-- Table of Contents Sidebar -->
   {#if headings.length > 0}
     <aside class="toc-sidebar">
       <span class="toc-title">Course Content</span>
@@ -326,7 +323,6 @@
 </div>
 
 <style>
-  /* --- Grid Layout matching PostLayout exactly --- */
   .post-layout {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 680px) minmax(0, 1fr);
@@ -341,7 +337,6 @@
     padding-bottom: 2rem;
   }
 
-  /* --- Sidebar TOC Styles --- */
   .toc-sidebar {
     grid-column: 3;
     position: sticky;
@@ -423,7 +418,6 @@
     background: rgba(59, 130, 246, 0.08);
   }
 
-  /* --- Course Overview Specific Header --- */
   .post-header {
     text-align: center;
     margin-bottom: 5rem;

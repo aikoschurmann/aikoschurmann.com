@@ -584,21 +584,65 @@ This is why code generation is often split into multiple passes: instruction sel
 
 When the compiler generates code for a function, it must manage where local variables, arguments, and return addresses are stored. This structured memory is called a **stack frame** (or activation record). Every function call allocates a new frame on the call stack, and every return deallocates it.
 
-Consider a simple function `int add(int a, int b)` that uses a local variable to hold the sum before returning it. 
+To understand how this works, we must first understand the two special registers used to navigate the stack. While we use conceptual names like SP and FP, in **x86-64 assembly**, these are mapped to specific registers:
 
-The stack frame provides concrete addresses for these conceptual variables. The layout depends on the target architecture and its **calling convention**—the agreed-upon rules for how functions interact.
+1. **Stack Pointer (`rsp`)**: The "top" of the stack. It moves every time we push or pop data. Because it's constantly changing as we perform calculations or call other functions, it's difficult to use as a stable reference for finding variables.
+2. **Frame Pointer (`rbp`)**: Also called the **Base Pointer**. It points to a *fixed location* within the current frame. Unlike `rsp`, the `rbp` register stays constant throughout the entire function execution, acting as a stable "anchor" for calculating offsets to local variables and arguments.
 
-A typical architecture-neutral stack layout might look like this:
+> **Note on Naming**: The 'r' prefix in `rsp` and `rbp` stands for the 64-bit "Register" size. In 32-bit systems, these were called `esp` and `ebp`.
 
-<StackFrameEmbed />
+Let's trace the execution of a function `int add(int a, int b)` through its stack lifecycle.
 
-The calling convention determines:
-- **Where arguments live**: On older architectures (like 32-bit x86), arguments are pushed onto the stack. On modern architectures like x86-64 and ARM64, the first few arguments are passed in hardware registers (e.g., `rdi`, `rsi` in x86-64, or `x0`, `x1` in ARM64) to improve speed. The stack is only used if there are too many arguments.
-- **Who cleans up**: Either the caller or the callee is responsible for popping arguments off the stack.
-- **Alignment**: The stack pointer often must be aligned to a 16-byte boundary before a call. The compiler inserts padding (empty space) to ensure this, avoiding hardware penalties or crashes.
+#### Phase 1: The Caller Pushes Arguments
+Before the function is entered, the **caller** pushes arguments onto the stack. These will be found at *positive* offsets from our future anchor.
 
-Understanding the stack frame is crucial for code generation. When the compiler sees `sum = a + b`, it translates these variable names into memory offsets relative to the frame pointer (e.g., `[rbp - 4]`), mapping abstract scope into physical execution.
+<StackFrameEmbed items={[
+  { label: 'Argument b', note: 'Offset: +16', type: 'caller' },
+  { label: 'Argument a', note: 'Offset: +8', type: 'caller' },
+  { label: '(Free space)', note: 'Current stack top', type: 'empty', isSp: true }
+]} />
 
+#### Phase 2: The Call and Prologue
+When the `call` instruction runs, the hardware pushes the **Return Address** onto the stack. Immediately inside the function, the "Prologue" code runs:
+1. `push rbp`: Save the caller's anchor.
+2. `mov rbp, rsp`: Set our new stable anchor (FP) to the current stack top.
+
+<StackFrameEmbed items={[
+  { label: 'Argument b', type: 'caller' },
+  { label: 'Argument a', type: 'caller' },
+  { label: 'Return Address', note: 'Pushed by CALL', type: 'control' },
+  { label: 'Saved RBP', note: 'Caller\'s anchor', type: 'control', isFp: true, isSp: true },
+  { label: '(Free space)', note: 'Below current stack', type: 'empty' }
+]} />
+
+#### Phase 3: Allocating Local Variables
+The function now "grows" the stack by subtracting from the Stack Pointer (e.g., `sub rsp, 16`) to reserve space for local data. Since the FP stays at the base, all local variables are found at *negative* offsets from it.
+
+<StackFrameEmbed items={[
+  { label: 'Argument b', note: '[rbp + 24]', type: 'caller' },
+  { label: 'Argument a', note: '[rbp + 16]', type: 'caller' },
+  { label: 'Return Address', note: '[rbp + 8]', type: 'control' },
+  { label: 'Saved RBP', note: '[rbp + 0]', type: 'control', isFp: true },
+  { label: 'Local: sum', note: '[rbp - 8]', type: 'local' },
+  { label: '(Free space)', note: 'Current stack top', type: 'empty', isSp: true }
+]} />
+
+#### Phase 4: The Epilogue and Return
+When the function is ready to return, it must "tear down" the frame to restore the caller's environment. This is called the **Epilogue** and involves reversing the steps of the Prologue:
+
+1. **Deallocate Locals**: `mov rsp, rbp`. This snaps the Stack Pointer back to the anchor, instantly "forgetting" all local variables.
+2. **Restore Caller's Anchor**: `pop rbp`. This takes the saved value from the stack and puts it back into the `rbp` register.
+3. **Return**: `ret`. This final step pops the **Return Address** off the stack and into the Instruction Pointer, jumping execution back to the caller.
+
+<StackFrameEmbed items={[
+  { label: 'Argument b', type: 'caller' },
+  { label: 'Argument a', type: 'caller' },
+  { label: 'Return Address', note: 'Next to be popped', type: 'control', isSp: true },
+  { label: '(Deallocated)', type: 'empty' },
+  { label: '(Deallocated)', type: 'empty' }
+]} />
+
+The calling convention determines these exact rules—who pushes what, who cleans up the stack, and how registers are preserved. Understanding this layout is essential for the **Code Generation** phase, where the compiler must translate abstract variable names into concrete memory offsets like `[rbp - 8]`.
 ## 1.10 Historical Context: How Compiler Design Evolved
 
 ### 1.10.1 1950s Origins
