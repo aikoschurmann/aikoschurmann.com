@@ -478,19 +478,6 @@ INT      : [0-9]+
 SPACE    : [ \t\n]+
 ```
 
-**10.** A programmer writes a lexer specification where the identifier pattern `[A-Za-z_][A-Za-z0-9_]*` appears before the keyword patterns `if`, `while`, `return`.
-
-a. What will happen when the lexer encounters the input `if`?  
-b. How should the specification be ordered to fix this?  
-c. What general rule does this illustrate about lexer priority?
-
-**11.** Explain the maximal munch rule. For each of the following inputs, determine what tokens a lexer produces using maximal munch (assume standard C-like token patterns):
-
-a. `<=>`  
-b. `count42`  
-c. `===`  
-d. `ifcount`
-
 ### Advanced
 
-**12.** **Theoretical**: Prove that if $L$ is a regular language recognized by an $n$-state DFA, then either $L$ is finite or $L$ is infinite and contains a string of length between $n$ and $2n$. (Hint: consider what happens when you trace a path of length exactly $n$ through the DFA.)
+**10.** **Theoretical**: Prove that if $L$ is a regular language recognized by an $n$-state DFA, then either $L$ is finite or $L$ is infinite and contains a string of length between $n$ and $2n$. (Hint: consider what happens when you trace a path of length exactly $n$ through the DFA.)

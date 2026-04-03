@@ -6,6 +6,8 @@ author: "Aiko Schurmann"
 description: "Design token sets, precedence rules, and keyword-versus-identifier policies for reliable scanner behavior."
 tags:
   - "COMPILERS"
+  - "Core"
+
 chapterTitle: "Token Specification and Priority Design"
 showInCourse: false
 ---
