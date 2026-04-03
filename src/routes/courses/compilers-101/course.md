@@ -34,7 +34,7 @@ Whether you're a seasoned engineer looking to demystify how your tools work, or 
   description="From regular languages to practical recognizers: regex, NFA/DFA construction, and pushdown automata as the bridge to nested syntax."
 >
 
-**Note:** The chapters in this section cover the formal mathematical foundations behind automatic lexer generation. If your goal is to learn how to build a practical, hand-written compiler from scratch without the heavy math, you can safely skip this entire section and jump straight to *Lexer Engineering*. You can always return here later for the theoretical deep dive!
+**Note:** The chapters in this section cover the formal mathematical foundations behind automatic lexer and parser generation. If your goal is to learn how to build a practical, hand-written compiler from scratch without the heavy math, you can safely skip this entire section and jump straight to *Lexer Engineering*. You can always return here later for the theoretical deep dive!
 
   <ChapterEmbed slug="02-regular-languages-and-regex" />
   <ChapterEmbed slug="03-nfa-and-dfa" />

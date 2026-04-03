@@ -6,6 +6,7 @@ author: "Aiko Schurmann"
 description: "A rigorous introduction to alphabets, strings, languages, and regular expressions—the mathematical foundation of lexical analysis."
 tags:
   - "AUTOMATA"
+  - "LEXING"
   - "Optional"
 chapterTitle: "Regular Languages and Regular Expressions"
 ---

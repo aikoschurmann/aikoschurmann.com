@@ -6,6 +6,7 @@ author: "Aiko Schurmann"
 description: "Master the algorithmic core of lexer generation: converting regex to NFA and NFA to efficient DFA."
 tags:
   - "AUTOMATA"
+  - "LEXING
   - "Optional"
 chapterTitle: "Thompson's Construction and Subset Algorithm"
 ---

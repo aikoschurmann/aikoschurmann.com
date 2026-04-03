@@ -6,6 +6,7 @@ author: "Aiko Schurmann"
 description: "Model recognition with nondeterministic and deterministic automata, and compare their construction and runtime behavior."
 tags:
   - "AUTOMATA"
+  - "LEXING"
   - "Optional"
 chapterTitle: "Finite Automata: NFA and DFA"
 ---
