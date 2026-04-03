@@ -37,8 +37,12 @@
   let shouldRender = $derived(slugs ? visibleSlugs.length > 0 : true);
 
   const sectionId = $derived(String(index ?? title));
-  // Safely access ui context with optional chaining
-  const isCollapsed = $derived(ui ? !ui.expandedSections()[sectionId] : !initiallyOpen);
+  
+  const isCollapsed = $derived.by(() => {
+    if (!ui) return !initiallyOpen;
+    const state = ui.expandedSections()[sectionId];
+    return state === undefined ? !initiallyOpen : !state;
+  });
 
   function handleToggle() {
     if (ui) {
@@ -80,7 +84,7 @@
     </div>
   </div>
 
-  {#if !isCollapsed}
+  <div class="course-section-content" class:collapsed={isCollapsed}>
     {#if description}
       <p class="course-section-desc">{description}</p>
     {/if}
@@ -88,7 +92,7 @@
     <div class="course-post-list">
       {@render children?.()}
     </div>
-  {/if}
+  </div>
 </section>
 {/if}
 
@@ -195,6 +199,10 @@
 
   .section-toggle.collapsed .section-toggle-arrow {
     transform: rotate(-90deg);
+  }
+
+  .course-section-content.collapsed {
+    display: none;
   }
 
   .course-section-desc {

@@ -47,6 +47,7 @@
   .course-chapter-link:hover {
     border-color: rgba(255, 255, 255, 0.2);
     background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-2px);
   }
 
   .chapter-top {
@@ -58,9 +59,9 @@
 
   .chapter-index {
     flex-shrink: 0;
-    padding: 0.35rem 0.6rem;
+    padding: 0.35rem 0.65rem;
     border-radius: 6px;
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 0.05em;
     font-family: var(--font-mono);

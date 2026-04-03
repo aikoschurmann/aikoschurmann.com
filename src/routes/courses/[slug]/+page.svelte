@@ -15,12 +15,16 @@
   let tocListEl = $state<HTMLElement | null>(null);
 
   // Track which sections are expanded. Key is the section index or a slug.
-  let expandedSections = $state<Record<string, boolean>>({
-    "1": true, // Default expand first section
-  });
+  let expandedSections = $state<Record<string, boolean>>({});
 
   function toggleSection(id: string, force?: boolean) {
-    expandedSections[id] = force !== undefined ? force : !expandedSections[id];
+    // Initialize if not present based on DOM presence or defaults
+    if (expandedSections[id] === undefined) {
+      // We assume it was open if it wasn't in the state yet (default behavior)
+      expandedSections[id] = force !== undefined ? force : false;
+    } else {
+      expandedSections[id] = force !== undefined ? force : !expandedSections[id];
+    }
   }
 
   // Svelte 5 reactive context
