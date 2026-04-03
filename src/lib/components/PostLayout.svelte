@@ -326,7 +326,8 @@
                   <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="15 18 9 12 15 6"/>
                   </svg>
-                  Previous chapter
+                  <span class="nav-label-full">Previous chapter</span>
+                  <span class="nav-label-short">Prev</span>
                 </a>
               {/if}
             </div>
@@ -336,7 +337,8 @@
             <div class="nav-slot next-slot">
               {#if courseContext.next}
                 <a class="course-step-link" href={`${courseContext.next.url}?course=${courseContext.slug}&part=${courseContext.next.part}`}>
-                  Next chapter
+                  <span class="nav-label-full">Next chapter</span>
+                  <span class="nav-label-short">Next</span>
                   <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="9 18 15 12 9 6"/>
                   </svg>
@@ -350,7 +352,8 @@
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
               </svg>
-              Back to course
+              <span class="nav-label-full">Back to course</span>
+              <span class="nav-label-short">Back</span>
             </a>
           </div>
         </div>
@@ -566,20 +569,23 @@
   }
 
   .back-link {
-    display: flex;
-    align-items: center;
+    display: inline-block;
+    text-align: center;
     text-decoration: none;
     color: var(--fg-muted);
     font-size: 0.9rem;
     font-weight: 500;
     transition: all 0.2s ease;
     position: relative;
+    line-height: 1.4;
   }
 
   .back-link svg {
     color: var(--accent);
     position: absolute;
+    top: 50%;
     right: calc(100% + 0.75rem);
+    transform: translateY(-50%);
     transition: transform 0.2s ease;
   }
 
@@ -588,7 +594,23 @@
   }
 
   .back-link:hover svg {
-    transform: translateX(-4px);
+    transform: translateY(-50%) translateX(-4px);
+  }
+
+  .nav-label-short {
+    display: none;
+  }
+
+  @media (max-width: 500px) {
+    .nav-label-full {
+      display: none;
+    }
+    .nav-label-short {
+      display: inline;
+    }
+    .nav-row-main {
+      gap: 0.75rem;
+    }
   }
 
   /* Specific handling for thoughts back link to maintain standard flow if needed */
