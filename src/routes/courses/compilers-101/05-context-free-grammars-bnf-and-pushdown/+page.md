@@ -3,7 +3,7 @@ layout: blog
 title: "Context-Free Grammars and Pushdown Automata"
 date: "2026-04-02"
 author: "Aiko Schurmann"
-description: "Move beyond regular languages with context-free grammars and pushdown automata — the formal backbone of every parser."
+description: "Move beyond regular languages with context-free grammars and pushdown automata—the formal backbone of every parser."
 tags:
   - "AUTOMATA"
   - "PARSING"

@@ -611,8 +611,8 @@ When the `call` instruction runs, the hardware pushes the **Return Address** ont
   { label: 'Argument b', type: 'caller' },
   { label: 'Argument a', type: 'caller' },
   { label: 'Return Address', note: 'Pushed by CALL', type: 'control' },
-  { label: 'Saved RBP', note: 'Caller\'s anchor', type: 'control', isFp: true, isSp: true },
-  { label: '(Free space)', note: 'Below current stack', type: 'empty' }
+  { label: 'Saved RBP', note: 'Caller\'s anchor', type: 'control' },
+  { label: '(Free space)', note: 'Below current stack', type: 'empty', isFp: true, isSp: true }
 ]} />
 
 #### Phase 3: Allocating Local Variables
@@ -622,8 +622,8 @@ The function now "grows" the stack by subtracting from the Stack Pointer (e.g., 
   { label: 'Argument b', note: '[rbp + 24]', type: 'caller' },
   { label: 'Argument a', note: '[rbp + 16]', type: 'caller' },
   { label: 'Return Address', note: '[rbp + 8]', type: 'control' },
-  { label: 'Saved RBP', note: '[rbp + 0]', type: 'control', isFp: true },
-  { label: 'Local: sum', note: '[rbp - 8]', type: 'local' },
+  { label: 'Saved RBP', note: '[rbp + 0]', type: 'control'},
+  { label: 'Local: sum', note: '[rbp - 8]', type: 'local', isFp: true },
   { label: '(Free space)', note: 'Current stack top', type: 'empty', isSp: true }
 ]} />
 
@@ -637,8 +637,8 @@ When the function is ready to return, it must "tear down" the frame to restore t
 <StackFrameEmbed items={[
   { label: 'Argument b', type: 'caller' },
   { label: 'Argument a', type: 'caller' },
-  { label: 'Return Address', note: 'Next to be popped', type: 'control', isSp: true },
-  { label: '(Deallocated)', type: 'empty' },
+  { label: 'Return Address', note: 'Next to be popped', type: 'control'},
+  { label: '(Deallocated)', type: 'empty',  isSp: true },
   { label: '(Deallocated)', type: 'empty' }
 ]} />
 
