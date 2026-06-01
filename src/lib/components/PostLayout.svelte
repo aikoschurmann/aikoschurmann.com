@@ -349,7 +349,7 @@
 
           <div class="nav-row-bottom">
             <a href={`/courses/${courseContext.slug}`} class="back-link">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="back-arrow">
                 <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
               </svg>
               <span class="nav-label-full">Back to course</span>
@@ -358,14 +358,16 @@
           </div>
         </div>
       {:else}
-        <a href="/blog" class="back-link thoughts-back">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
-          </svg>
-          Back to thoughts
-        </a>
-      {/if}
-    </div>
+        <div class="nav-row-bottom">
+          <a href="/blog" class="back-link">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="back-arrow">
+              <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+            </svg>
+            <span class="nav-label-full">Back to thoughts</span>
+            <span class="nav-label-short">Back</span>
+          </a>
+        </div>
+      {/if}    </div>
   </article>
 
   <!-- Table of Contents Sidebar -->
@@ -569,23 +571,19 @@
   }
 
   .back-link {
-    display: inline-block;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
     text-decoration: none;
     color: var(--fg-muted);
     font-size: 0.9rem;
     font-weight: 500;
-    transition: all 0.2s ease;
-    position: relative;
-    line-height: 1.4;
+    transition: color 0.2s ease;
+    cursor: pointer;
   }
 
-  .back-link svg {
+  .back-arrow {
     color: var(--accent);
-    position: absolute;
-    top: 50%;
-    right: calc(100% + 0.75rem);
-    transform: translateY(-50%);
     transition: transform 0.2s ease;
   }
 
@@ -593,8 +591,8 @@
     color: var(--fg);
   }
 
-  .back-link:hover svg {
-    transform: translateY(-50%) translateX(-4px);
+  .back-link:hover .back-arrow {
+    transform: translateX(-4px);
   }
 
   .nav-label-short {
@@ -613,15 +611,14 @@
     }
   }
 
-  /* Specific handling for thoughts back link to maintain standard flow if needed */
-  .thoughts-back {
-    gap: 0.75rem;
-  }
-  .thoughts-back svg {
-    position: static;
+  /* Indents H3 tags to show hierarchy */
+  .toc-link.depth-3 {
+    padding-left: 2rem;
+    font-size: 0.75rem;
+    opacity: 0.8;
   }
 
-  /* --- TOC Typography --- */
+  /* TOC Typography */
   .toc-title {
     display: block;
     font-family: var(--font-sans);
@@ -664,8 +661,7 @@
     font-weight: 600;
   }
 
-  /* Indents H3 tags to show hierarchy */
-  .toc-link.depth-3 {
+  .toc-link indents-h3 {
     padding-left: 2rem;
     font-size: 0.75rem;
     opacity: 0.8;
