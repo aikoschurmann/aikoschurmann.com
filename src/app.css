@@ -471,6 +471,7 @@ nav.dock {
   font-family: var(--font-mono);
   font-size: 0.9rem;
   margin: 2rem 0;
+  tab-size: 2;
 }
 
 .prose code {
@@ -479,6 +480,7 @@ nav.dock {
   background: rgba(255, 255, 255, 0.1);
   padding: 0.2em 0.4em;
   border-radius: 4px;
+  tab-size: 2;
 }
 .prose pre code { background: transparent; padding: 0; }
 
@@ -565,6 +567,44 @@ nav.dock {
 
 .prose .katex-display .katex {
   margin-right: 0;
+}
+
+.prose pre {
+  position: relative;
+}
+
+.copy-code-button {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--fg-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.prose pre:hover .copy-code-button {
+  opacity: 1;
+}
+
+.copy-code-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--fg);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.copy-code-button.copied {
+  opacity: 1;
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
 }
 
 footer {
