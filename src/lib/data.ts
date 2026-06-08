@@ -21,6 +21,11 @@ const rawBlogModules = import.meta.glob('/src/routes/blog/*/+page.md', {
   import: 'default',
   eager: true
 });
+const rawResearchModules = import.meta.glob('/src/routes/research/*/+page.md', {
+  query: '?raw',
+  import: 'default',
+  eager: true
+});
 const rawCourseLessonModules = import.meta.glob('/src/routes/courses/*/*/+page.md', {
   query: '?raw',
   import: 'default',
@@ -29,7 +34,21 @@ const rawCourseLessonModules = import.meta.glob('/src/routes/courses/*/*/+page.m
 const courseModules = import.meta.glob('/src/routes/courses/*/course.md', {
   eager: true
 });
-const rawModules = { ...rawBlogModules, ...rawCourseLessonModules };
+const rawModules = { ...rawBlogModules, ...rawResearchModules, ...rawCourseLessonModules };
+
+const roadmapModules = import.meta.glob('/src/routes/research/roadmap.md', {
+  eager: true
+});
+
+export const researchRoadmap = Object.entries(roadmapModules).map(([path, module]) => {
+  const m = module as any;
+  return {
+    title: m.metadata.title,
+    description: m.metadata.description,
+    component: m.default
+  };
+})[0];
+
 
 function parseFrontmatter(raw: string) {
   const match = raw.match(/^---\n([\s\S]*?)\n---/);
@@ -208,6 +227,7 @@ export const thoughts = Object.entries(rawModules).map(([path, raw]) => {
   const meta = parseFrontmatter(rawContent);
   const courseMeta = getCoursePathMeta(url);
   const isBlogPost = url.startsWith('/blog/');
+  const isResearchPost = url.startsWith('/research/');
   const readingStats = getReadingStats(rawContent);
 
   let rawTags: string[] = [];
@@ -225,7 +245,19 @@ export const thoughts = Object.entries(rawModules).map(([path, raw]) => {
   const date = getMetaString(meta, 'date') || '';
   const showOnHome = meta.showOnHome !== false;
   const showInBlog = isBlogPost ? meta.showInBlog !== false : false;
+  const showInResearch = isResearchPost ? meta.showInResearch !== false : false;
   const showInCourse = meta.showInCourse !== false;
+
+  const academicType = getMetaString(meta, 'academicType');
+  const period = getMetaString(meta, 'period');
+  const institution = getMetaString(meta, 'institution');
+
+  // Add academic metadata to tags for research posts (Year first)
+  if (isResearchPost) {
+    if (academicType) rawTags.unshift(academicType);
+    if (institution) rawTags.unshift(institution);
+    if (period) rawTags.unshift(period);
+  }
 
   return {
     title,
@@ -238,7 +270,11 @@ export const thoughts = Object.entries(rawModules).map(([path, raw]) => {
     tags: rawTags.map(getTagData),
     showOnHome,
     showInBlog,
+    showInResearch,
     showInCourse,
+    academicType,
+    period,
+    institution,
     courseSlug: courseMeta?.courseSlug,
     courseLessonOrder: courseMeta?.courseLessonOrder,
     courseChapterTitle: getMetaString(meta, 'chapterTitle') || courseMeta?.courseLessonTitle
@@ -246,6 +282,7 @@ export const thoughts = Object.entries(rawModules).map(([path, raw]) => {
 }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
 export const blogThoughts = thoughts.filter((thought) => thought.showInBlog);
+export const researchThoughts = thoughts.filter((thought) => thought.showInResearch);
 
 export type Thought = (typeof thoughts)[number];
 

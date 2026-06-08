@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { blogThoughts, projects } from '$lib/data';
+  import { blogThoughts, researchThoughts, researchRoadmap, projects } from '$lib/data';
   import ProfileSidebar from '$lib/components/ProfileSidebar.svelte';
   import ProjectCard from '$lib/components/ProjectCard.svelte';
   import ThoughtCard from '$lib/components/ThoughtCard.svelte';
@@ -20,7 +20,7 @@
   
     <p class="hero-desc">
       Computer science student currently at <strong>VUB</strong>, soon continuing at <strong>KU Leuven</strong> for an MSc in Software Engineering.
-      Focused on low-level systems, compilers, and writing efficient software.
+      Focused on low-level systems, compilers, and writing efficient software. Outside of tech, I run a photography business called <a href="https://tarchief.studio" target="_blank" rel="noopener" style="text-decoration: underline; color: inherit;">Studio 't archief</a>.
     </p>
 
     <section id="projects">
@@ -37,13 +37,44 @@
       </div>
     </section>
 
-    <section id="thoughts" style="margin-top: 10rem;">
-      <h2 class="big-title">Research <br><span>Thoughts</span></h2>
-      <div class="project-list">
-        {#each homeThoughts as thought}
-          <ThoughtCard {thought} />
-        {/each}
-      </div>
-    </section>
+    {#if researchRoadmap}
+      <section id="research" style="margin-top: 10rem;">
+        <h2 class="big-title">Academic <br><span>Roadmap</span></h2>
+        
+        {#if researchRoadmap.component}
+          {@const Roadmap = researchRoadmap.component}
+          <div class="roadmap-homepage-content">
+            <Roadmap />
+          </div>
+        {/if}
+      </section>
+    {/if}
+
+    {#if homeThoughts.length > 0}
+      <section id="thoughts" style="margin-top: 10rem;">
+        <h2 class="big-title">Engineering <br><span>Thoughts</span></h2>
+        <div class="project-list">
+          {#each homeThoughts as thought}
+            <ThoughtCard {thought} />
+          {/each}
+        </div>
+      </section>
+    {/if}
   </div>
 </div>
+
+<style>
+  .roadmap-homepage-content {
+    text-align: left;
+    margin-top: 4rem;
+  }
+
+  /* Ensure roadmap intro text matches the site aesthetic */
+  .roadmap-homepage-content :global(p) {
+    font-size: 1.25rem;
+    color: var(--fg-muted);
+    max-width: 500px;
+    line-height: 1.5;
+    margin-bottom: 2rem;
+  }
+</style>

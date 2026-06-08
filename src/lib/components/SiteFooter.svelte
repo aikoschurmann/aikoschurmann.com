@@ -5,6 +5,7 @@
       <span class="footer-status"><span class="status-dot"></span> Available for new opportunities</span>
     </div>
     <div class="footer-right">
+      <a href="https://tarchief.studio" target="_blank" rel="noopener">Studio 't archief</a>
       <a href="https://github.com/aikoschurmann" target="_blank" rel="noopener">GitHub</a>
       <a href="https://linkedin.com/in/aiko-schurmann" target="_blank" rel="noopener">LinkedIn</a>
       <button class="back-to-top" onclick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>

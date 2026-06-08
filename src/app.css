@@ -18,6 +18,11 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* Ensure interactive elements show the hand cursor reliably */
+a, button, [role="button"], input[type="button"], input[type="submit"], .project-card-minimal, .post-card {
+  cursor: pointer;
+}
+
 body {
   background: var(--bg);
   color: var(--fg);

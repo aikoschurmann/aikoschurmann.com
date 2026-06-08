@@ -25,4 +25,10 @@ export const tagColors: Record<string, TagStyle> = {
   BEGINNER: { color: '#4ade80', bg: 'rgba(74, 222, 128, 0.1)' },
   Core: { color: '#818cf8', bg: 'rgba(129, 140, 248, 0.12)' },
   Optional: { color: '#94a3b8', bg: 'rgba(148, 163, 184, 0.1)' },
+  // Academic & Research Tags
+  RESEARCH: { color: '#818cf8', bg: 'rgba(129, 140, 248, 0.12)' },
+  VUB: { color: '#60a5fa', bg: 'rgba(59, 130, 246, 0.12)' },
+  'KU Leuven': { color: '#6366f1', bg: 'rgba(99, 102, 241, 0.12)' },
+  'Bachelor’s Thesis': { color: '#c084fc', bg: 'rgba(192, 132, 252, 0.1)' },
+  'Master’s Thesis': { color: '#c084fc', bg: 'rgba(192, 132, 252, 0.1)' },
 };

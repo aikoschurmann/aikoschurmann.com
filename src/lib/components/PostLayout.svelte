@@ -3,11 +3,25 @@
   import { page } from '$app/state';
   import { getCourseBySlug, getTagData } from '$lib/data';
   
-  let { title, date, description = '', tag, children } = $props<{
-    title: string;
-    date: string;
+  let { 
+    title = 'Untitled', 
+    date = '', 
+    description = '', 
+    tag = '', 
+    tags = [],
+    academicType = '',
+    period = '',
+    institution = '',
+    children 
+  } = $props<{
+    title?: string;
+    date?: string;
     description?: string;
     tag?: string;
+    tags?: string[];
+    academicType?: string;
+    period?: string;
+    institution?: string;
     children: any;
   }>();
 
@@ -20,8 +34,29 @@
   const canonicalUrl = $derived(`${page.url.origin}${page.url.pathname}`);
   const fullTitle = $derived(`${title} | Systems Notes`);
   const metaDescription = $derived(description || `Research and technical notes on ${title}.`);
-  const tagData = $derived(tag ? getTagData(tag) : undefined);
+  
+  // Combine all possible tag sources
+  const allTags = $derived.by(() => {
+    const list: string[] = [];
+    
+    // Add academic metadata first (Year first)
+    if (period) list.push(period);
+    if (institution) list.push(institution);
+    if (academicType) list.push(academicType);
+    
+    // Add standard tags
+    if (tag) list.push(tag);
+    if (Array.isArray(tags)) {
+      list.push(...tags);
+    }
+    
+    // Deduplicate and get data
+    const unique = [...new Set(list.filter(t => typeof t === 'string' && t.length > 0))];
+    return unique.map(getTagData);
+  });
+
   const displayDate = $derived.by(() => {
+    if (!date) return '';
     const parsed = new Date(date);
     if (Number.isNaN(parsed.getTime())) return date;
 
@@ -31,6 +66,7 @@
       year: 'numeric'
     }).format(parsed).toUpperCase();
   });
+
   const courseContext = $derived.by(() => {
     const courseSlug = page.url.searchParams.get('course');
     if (!courseSlug) return null;
@@ -56,6 +92,7 @@
     };
   });
   const publishedTime = $derived.by(() => {
+    if (!date) return undefined;
     const parsedDate = new Date(date);
     if (Number.isNaN(parsedDate.getTime())) return undefined;
     return parsedDate.toISOString();
@@ -302,11 +339,13 @@
   <article class="post-container">
     <header class="post-header">
       <div class="meta">{displayDate}</div>
-      <h1 class="post-title" id="introduction">{title}</h1>
-      {#if tagData}
+      <h1 class="post-title" id="post-top">{title}</h1>
+      {#if allTags && allTags.length > 0}
         <div class="meta-row">
           <div class="tags-list">
-            <span class="tag" style={tagData.style}>{tagData.name}</span>
+            {#each allTags as tData}
+              <span class="tag" style={tData.style}>{tData.name}</span>
+            {/each}
           </div>
         </div>
       {/if}
@@ -359,11 +398,11 @@
         </div>
       {:else}
         <div class="nav-row-bottom">
-          <a href="/blog" class="back-link">
+          <a href={page.url.pathname.startsWith('/research/') ? '/research' : '/blog'} class="back-link">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="back-arrow">
               <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
             </svg>
-            <span class="nav-label-full">Back to thoughts</span>
+            <span class="nav-label-full">Back to {page.url.pathname.startsWith('/research/') ? 'research' : 'thoughts'}</span>
             <span class="nav-label-short">Back</span>
           </a>
         </div>
@@ -477,6 +516,8 @@
 
   .tags-list {
     display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
     gap: 0.6rem;
   }
 

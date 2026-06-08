@@ -30,8 +30,15 @@
 
     if (path === '/blog') {
       return {
-        title: 'Research Thoughts',
+        title: 'Engineering Thoughts',
         description: 'Technical writing on compilers, systems programming, and high-performance software engineering.'
+      };
+    }
+
+    if (path === '/research') {
+      return {
+        title: 'Academic Research',
+        description: 'An archive of formal research, papers, and academic theses.'
       };
     }
 
@@ -46,6 +53,13 @@
       return {
         title: 'Technical Writing',
         description: 'Engineering notes on low-level implementation details, performance experiments, and systems design.'
+      };
+    }
+
+    if (path.startsWith('/research/')) {
+      return {
+        title: 'Academic Research',
+        description: 'Formal academic research and theses.'
       };
     }
 
@@ -72,11 +86,12 @@
   const canonicalUrl = $derived(`${page.url.origin}${page.url.pathname}`);
   const isDetailPage = $derived(
     page.url.pathname.startsWith('/blog/') ||
+    page.url.pathname.startsWith('/research/') ||
     page.url.pathname.startsWith('/projects/') ||
     page.url.pathname.startsWith('/courses/')
   );
 
-  const isBlogDetailPage = $derived(page.url.pathname.startsWith('/blog/') || isCourseLessonPage);
+  const isBlogDetailPage = $derived(page.url.pathname.startsWith('/blog/') || page.url.pathname.startsWith('/research/') || isCourseLessonPage);
   const isProjectDetailPage = $derived(page.url.pathname.startsWith('/projects/'));
   const isCourseDetailPage = $derived(page.url.pathname.startsWith('/courses/') && !isCourseLessonPage && page.url.pathname !== '/courses');
   
@@ -143,7 +158,13 @@
           <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2z"/>
         </svg>
       </a>
-      <a href="/blog" class="nav-item" data-tooltip="Research Thoughts" aria-label="Research Thoughts" title="Research Thoughts">
+      <a href="/research" class="nav-item" data-tooltip="Academic Research" aria-label="Academic Research" title="Academic Research">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+          <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+        </svg>
+      </a>
+      <a href="/blog" class="nav-item" data-tooltip="Engineering Thoughts" aria-label="Engineering Thoughts" title="Engineering Thoughts">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
           <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
