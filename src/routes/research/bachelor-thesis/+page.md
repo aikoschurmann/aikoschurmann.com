@@ -70,7 +70,7 @@ The highest-performing model configuration—utilizing a 25-step lookahead horiz
 **The Wall-Clock Trade-off**
 While the algorithmic iteration reductions are substantial, the practical reality of dynamic scheduling introduces a strict computational trade-off. In a standard FIFO queue, selecting the next component is an $O(1)$ operation. In contrast, the ML framework must iteratively extract a 19-dimensional feature vector for every pending candidate and pass it through an XGBoost ensemble. 
 
-| Benchmark | Iteration Reduction | Time Reduction |
+| Benchmark | Iter. Red. | Time Red. |
 | :--- | :--- | :--- |
 | **All Programs (N=32)** | 35.81% | -5.14% (Slowdown) |
 | **Large Programs (>1000 steps)** | 43.35% | +0.58% (Speedup) |
