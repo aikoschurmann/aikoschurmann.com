@@ -3,7 +3,7 @@
   import ProfileSidebar from '$lib/components/ProfileSidebar.svelte';
   import ThoughtCard from '$lib/components/ThoughtCard.svelte';
 
-  const uniqueTags = ['All', ...new Set(blogThoughts.flatMap(t => t.tags.map(tag => tag.name)))];
+  const featuredTags = ['All', 'C', 'SECURITY', 'INTERNING', 'ZIG'];
   let activeFilter = $state('All');
   
   const filteredThoughts = $derived(
@@ -26,7 +26,7 @@
       <p class="hero-desc">An archival log of research, technical insights, and observations.</p>
       
       <div class="filter-row">
-        {#each uniqueTags as tag}
+        {#each featuredTags as tag}
           <button 
             class="filter-btn" 
             class:active={activeFilter === tag}

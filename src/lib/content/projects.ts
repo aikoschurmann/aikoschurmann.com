@@ -44,7 +44,9 @@ export const projectEntries: RawProject[] = [
     description: 'A declarative schema-driven configuration engine for C99, generating strongly-typed and memory-safe code.',
     tags: ['C', 'SECURITY', 'AOT'],
     showOnHome: true,
-    research: []
+    research: [
+      { title: 'Type-Safe Configs in C99: Why I Prefer Code-Gen over Parsing', url: '/blog/type-safe-configs-c99' }
+    ]
   },
   {
     title: 'chess-asm',
