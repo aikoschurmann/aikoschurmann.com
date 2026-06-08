@@ -6,7 +6,6 @@ author: "Aïko Schürmann"
 description: "How framing worklist component selection as a Learning-to-Rank problem reduced algorithmic iterations by 35.8%."
 tag: "RESEARCH"
 showOnHome: true
-academicType: "Bachelor’s Thesis"
 period: "2025 - 2026"
 institution: "VUB"
 download: "/bachelor_thesis.pdf"
