@@ -12,6 +12,7 @@
     academicType = '',
     period = '',
     institution = '',
+    download = '',
     children 
   } = $props<{
     title?: string;
@@ -22,6 +23,7 @@
     academicType?: string;
     period?: string;
     institution?: string;
+    download?: string;
     children: any;
   }>();
 
@@ -54,6 +56,10 @@
     const unique = [...new Set(list.filter(t => typeof t === 'string' && t.length > 0))];
     return unique.map(getTagData);
   });
+
+  function handleDownloadClick(e: MouseEvent) {
+    e.stopPropagation();
+  }
 
   const displayDate = $derived.by(() => {
     if (!date) return '';
@@ -723,7 +729,7 @@
   .toc-link.active {
     color: var(--accent);
     border-left-color: transparent;
-    background: rgba(59, 130, 246, 0.08);
+    background: rgba(129, 140, 248, 0.1);
   }
 
   /* Automatically hide the sidebar and revert to a single column on smaller screens */

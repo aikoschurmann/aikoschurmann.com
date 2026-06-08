@@ -9,6 +9,7 @@ showOnHome: true
 academicType: "Bachelor’s Thesis"
 period: "2025 - 2026"
 institution: "VUB"
+download: "/bachelor_thesis.pdf"
 ---
 
 <script>

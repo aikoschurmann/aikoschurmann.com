@@ -251,6 +251,7 @@ export const thoughts = Object.entries(rawModules).map(([path, raw]) => {
   const academicType = getMetaString(meta, 'academicType');
   const period = getMetaString(meta, 'period');
   const institution = getMetaString(meta, 'institution');
+  const download = getMetaString(meta, 'download');
 
   // Add academic metadata to tags for research posts (Year first)
   if (isResearchPost) {
@@ -275,6 +276,7 @@ export const thoughts = Object.entries(rawModules).map(([path, raw]) => {
     academicType,
     period,
     institution,
+    download,
     courseSlug: courseMeta?.courseSlug,
     courseLessonOrder: courseMeta?.courseLessonOrder,
     courseChapterTitle: getMetaString(meta, 'chapterTitle') || courseMeta?.courseLessonTitle
