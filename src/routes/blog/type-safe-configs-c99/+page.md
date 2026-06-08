@@ -48,7 +48,7 @@ With `cfgsafe`, you write one line in the schema. The other 15 lines of boilerpl
 
 Instead of writing code to *parse* data, you write a schema to *describe* data. `cfgsafe` uses a custom DSL that allows you to define constraints directly in the definition.
 
-```scala
+```rust
 // app.schema
 schema Database {
   host: string { default: "localhost" }
@@ -125,7 +125,7 @@ This layering is baked into the generated code. The library also treats the `sec
 
 The generator produces specialized validation routines for every field. For example, if you use the `exists` property on a string, `cfgsafe` will verify that the path exists on the filesystem during the load phase:
 
-```scala
+```rust
 schema Logs {
   path: string { exists: true, default: "/var/log/myapp" }
 }
