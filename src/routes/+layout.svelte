@@ -153,15 +153,15 @@
           <polyline points="9 22 9 12 15 12 15 22"/>
         </svg>
       </a>
-      <a href="/projects" class="nav-item" data-tooltip="Projects" aria-label="Projects" title="Projects">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2z"/>
-        </svg>
-      </a>
       <a href="/research" class="nav-item" data-tooltip="Academic Research" aria-label="Academic Research" title="Academic Research">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
           <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+        </svg>
+      </a>
+      <a href="/projects" class="nav-item" data-tooltip="Projects" aria-label="Projects" title="Projects">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2z"/>
         </svg>
       </a>
       <a href="/blog" class="nav-item" data-tooltip="Engineering Thoughts" aria-label="Engineering Thoughts" title="Engineering Thoughts">
