@@ -23,7 +23,20 @@
       Focused on low-level systems, compilers, and writing efficient software. Outside of tech, I run a photography business called <a href="https://tarchief.studio" target="_blank" rel="noopener" style="text-decoration: underline; color: inherit;">Studio 't archief</a>.
     </p>
 
-    <section id="projects">
+    {#if researchRoadmap}
+      <section id="research" style="margin-top: 6rem;">
+        <h2 class="big-title">Academic <br><span>Roadmap</span></h2>
+        
+        {#if researchRoadmap.component}
+          {@const Roadmap = researchRoadmap.component}
+          <div class="roadmap-homepage-content">
+            <Roadmap />
+          </div>
+        {/if}
+      </section>
+    {/if}
+
+    <section id="projects" style="margin-top: 10rem;">
       <h2 class="big-title">Recent <br><span>Projects</span></h2>
       
       <div class="project-grid">
@@ -36,19 +49,6 @@
         <a href="/projects" style="font-family: var(--font-mono); font-size: 0.8rem; text-decoration: underline; color: var(--fg-muted);">View all projects →</a>
       </div>
     </section>
-
-    {#if researchRoadmap}
-      <section id="research" style="margin-top: 10rem;">
-        <h2 class="big-title">Academic <br><span>Roadmap</span></h2>
-        
-        {#if researchRoadmap.component}
-          {@const Roadmap = researchRoadmap.component}
-          <div class="roadmap-homepage-content">
-            <Roadmap />
-          </div>
-        {/if}
-      </section>
-    {/if}
 
     {#if homeThoughts.length > 0}
       <section id="thoughts" style="margin-top: 10rem;">
