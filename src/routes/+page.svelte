@@ -41,7 +41,7 @@
       
       <div class="project-grid">
         {#each homeProjects as project}
-          <ProjectCard {project} openInNewTab={true} />
+          <ProjectCard {project} />
         {/each}
       </div>
       

@@ -75,7 +75,7 @@
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
             </svg>
-            Source Code
+            Source
           </a>
         {/if}
       </div>
@@ -97,7 +97,7 @@
 
   {#if relatedPosts.length > 0}
     <aside class="research-sidebar">
-      <span class="research-title">Related Posts</span>
+      <span class="research-title">In-Depth Technical Writeups</span>
       <ul class="research-list">
         {#each relatedPosts as item}
           <li>
@@ -183,18 +183,21 @@
   }
 
   .github-tag {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: var(--fg-muted);
     font-size: 0.7rem;
     font-weight: 700;
     letter-spacing: 0.05em;
     padding: 0.35rem 0.8rem;
     border-radius: 6px;
-    transition: background 0.2s ease;
+    transition: all 0.2s ease;
   }
 
   .github-tag:hover {
-    background: rgba(255, 255, 255, 0.15);
+    background: var(--fg);
+    color: var(--bg);
+    border-color: var(--fg);
   }
 
   .post-footer {

@@ -196,7 +196,7 @@ nav.dock {
   height: 100%;
 }
 
-.project-card-minimal:hover {
+.project-card-minimal:not(:has(.github-action:hover)):hover {
   background: rgba(255, 255, 255, 0.05);
   border-color: rgba(255, 255, 255, 0.2);
 }
@@ -251,7 +251,7 @@ nav.dock {
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
-.project-card-minimal:hover .arrow {
+.project-card-minimal:not(:has(.github-action:hover)):hover .arrow {
   transform: translateX(4px) translateY(-4px);
   opacity: 1;
 }
