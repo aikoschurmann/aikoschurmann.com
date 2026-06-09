@@ -50,7 +50,7 @@ With `cfgsafe`, you write one line in the schema. The other 15 lines of boilerpl
 
 1.  **Define:** Create a `.schema` file using the `cfgsafe` DSL. Here you define your types, constraints (ranges, regex), and data sources (Env, CLI).
 2.  **Generate:** Run the `cfg-gen` tool. It parses your schema and outputs a single `config.h` header containing a native C `struct` and a robust validation engine.
-3.  **Load:** Call the generated `Config_load` function in your `main()`. It atomically resolves all values from files, env vars, and CLI flags, validates them, and populates your struct.
+3.  **Load:** Call the generated `Config_load` function in your `main()`. It atomically resolves all values from files, env vars, and CLI flags (passing `argc` and `argv`), validates them, and populates your struct.
 
 ## 1. The Philosophy: Schema-First Design
 
