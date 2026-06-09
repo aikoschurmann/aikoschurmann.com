@@ -44,6 +44,14 @@ The delta here isn't just about brevity; it's about **defensive programming**. I
 
 With `cfgsafe`, you write one line in the schema. The other 15 lines of boilerplate are moved into the generated header, where they are guaranteed to be correct.
 
+## The Workflow: 3 Steps to Type-Safety
+
+`cfgsafe` replaces runtime guesswork with a predictable build-time pipeline.
+
+1.  **Define:** Create a `.schema` file using the `cfgsafe` DSL. Here you define your types, constraints (ranges, regex), and data sources (Env, CLI).
+2.  **Generate:** Run the `cfg-gen` tool. It parses your schema and outputs a single `config.h` header containing a native C `struct` and a robust validation engine.
+3.  **Load:** Call the generated `Config_load` function in your `main()`. It atomically resolves all values from files, env vars, and CLI flags, validates them, and populates your struct.
+
 ## 1. The Philosophy: Schema-First Design
 
 Instead of writing code to *parse* data, you write a schema to *describe* data. `cfgsafe` uses a custom DSL that allows you to define constraints directly in the definition.
@@ -133,15 +141,28 @@ schema Logs {
 
 The generated code will perform an `access()` check (on Unix) or `GetFileAttributes` (on Windows) before considering the configuration "valid." This "fail-fast" behavior ensures that your application doesn't start up only to crash the first time it tries to write to a non-existent log directory.
 
-## 6. Comparison: Codegen vs. Runtime Parsing
+## 6. Comparison: Why AOT Beats Runtime Parsing
 
-| Feature | json-c / yaml-cpp | cfgsafe |
+Most C developers default to **libconfig** or **json-c**. While these libraries are mature, they operate entirely at runtime, which introduces a **"safety gap"** between your config file and your code.
+
+| Feature | libconfig | cfgsafe |
 | :--- | :--- | :--- |
-| **Type Safety** | Runtime Casts | Compile-time Structs |
-| **Lookup Cost** | O(log N) or O(N) | O(1) Offset |
-| **Memory Management** | Manual / Recursive | Atomic Pool |
-| **Validation** | Manual | Schema-Driven |
-| **Precedence** | Manual Merging | Automatic |
+| **Type Safety** | Runtime `config_lookup_int` | **Compile-time Structs** |
+| **Lookup Cost** | O(log N) Hash Lookup | **O(1) Memory Offset** |
+| **Memory Management** | Manual / Recursive | **Atomic Pool** |
+| **Validation** | Manual (Post-parsing) | **Declarative (In-Schema)** |
+| **Precedence** | Manual Merging | **Automatic (CLI > Env > File)** |
+
+With `libconfig`, you access data like this:
+```c
+int port;
+if (!config_lookup_int(&cfg, "db.port", &port)) {
+    // Handle error...
+}
+```
+If you typo `"db.port"` as `"db.prt"`, the compiler can't help you. You won't know until the program runs and fails. Furthermore, `libconfig` doesn't know that `port` should be between 1 and 65535—you have to write that `if (port < 1 || port > 65535)` check yourself, every time.
+
+`cfgsafe` closes this gap by moving the knowledge of your data structure into the **compilation phase**. By the time your `main()` receives the `Config_t` struct, every field has already been validated against your schema's constraints. If the data was invalid, `Config_load` would have already returned an error, preventing your app from entering an inconsistent state.
 
 ## Conclusion: Treating Config as Code
 
