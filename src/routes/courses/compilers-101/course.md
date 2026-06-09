@@ -43,11 +43,11 @@ Whether you're a seasoned engineer looking to demystify how your tools work, or 
 </CourseSection>
 
 
-<CourseSection 
-  title="Lexer Engineering" 
-  index={3} 
+<CourseSection
+  title="Lexer Engineering"
+  index={3}
   slugs={["06-token-specification-and-priority", "07-lexer-implementation-and-errors"]}
-  description="Turn automata into production lexers: token specs, matching policy, scanner modes, diagnostics, and performance concerns."
+  description="Design high-performance tokens with zero-copy slices and O(1) dense interning, then implement a production-ready scanner with robust error recovery."
 >
   <ChapterEmbed slug="06-token-specification-and-priority" />
   <ChapterEmbed slug="07-lexer-implementation-and-errors" />
