@@ -8,13 +8,14 @@ github: "https://github.com/aikoschurmann/cfgsafe"
 
 <script>
   import ProjectLayout from '$lib/components/ProjectLayout.svelte';
+  import PostEmbed from '$lib/components/PostEmbed.svelte';
 </script>
 
 <ProjectLayout>
 
 `cfgsafe` is a mini-compiler that transforms declarative schemas into zero-dependency, memory-safe C99 headers. It eliminates the CVE risks traditionally associated with manual string parsing and manual memory management in systems programming.
 
-### High-Signal Configuration
+### cfgsafe in use:
 
 **1. Define your constraints (`config.schema`)**
 ```scala
@@ -78,5 +79,9 @@ int main(int argc, char** argv) {
 *   **AOT Validation Boundary:** `cfg_load` acts as a strict security boundary. Range bounds, regex patterns, and enum variants are enforced *before* your business logic ever touches the data.
 *   **Automatic Secret Redaction:** Fields marked as `secret` are cryptographically zeroed on free and automatically redacted from all auto-generated logging/debug functions.
 *   **Zero Dependencies:** The generator emits standard C99 code with no external runtime requirements, making it ideal for embedded or high-performance systems.
+
+Read more about cfgsafe's design and implementation in the accompanying blog post:
+
+<PostEmbed id="Type-Safe Configs in C99: Why I Prefer Code-Gen over Parsing" />
 
 </ProjectLayout>

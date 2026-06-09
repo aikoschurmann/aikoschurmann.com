@@ -102,21 +102,29 @@ Managing string lifetimes in C is notoriously difficult. When you parse a JSON f
 `cfgsafe` uses an **Internal Memory Pool**. During the `Config_load` phase, all strings, arrays, and nested objects are allocated into a single, contiguous block of memory.
 
 ```c
-Config_t cfg;
-cfg_error_t err;
+#define CONFIG_IMPLEMENTATION
+#include "config.h"
 
-// One call to load and validate everything
-if (Config_load(&cfg, "config.ini", argc, argv, &err) != CFG_SUCCESS) {
-    handle_error(err);
+int main(int argc, char** argv) {
+  Config_t cfg;
+  cfg_error_t err;
+
+  // One call to load, validate, and resolve CLI/Env/INI
+  if (Config_load(&cfg, "config.ini", argc, (const char**)argv, &err) != CFG_SUCCESS) {
+    fprintf(stderr, "Config Error: %s at %s\n", err.message, err.field);
+    return 1;
+  }
+
+  // ... use cfg natively ...
+
+  // One call to free every single allocation associated with the config
+  Config_free(&cfg);
+  return 0;
 }
-
-// ... use cfg ...
-
-// One call to free every single allocation associated with the config
-Config_free(&cfg);
 ```
 
-By centralizing the memory management, we ensure that "half-allocated" configs are impossible. If validation fails halfway through, the library cleans up the pool automatically before returning an error.
+By centralizing the memory management, we ensure that "half-allocated" configs are impossible. 
+ If validation fails halfway through, the library cleans up the pool automatically before returning an error.
 
 ## 4. Layered Resolution and Security
 
