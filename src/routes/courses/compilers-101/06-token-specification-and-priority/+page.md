@@ -258,7 +258,7 @@ The solution is to establish a symbol's identity once—by assigning it a unique
 
 ## 6.6 The Evolutionary Journey to O(1) Identity
 
-To understand why **Dense Arena Interning** is the right design, we need to trace the evolution from the first obvious approach through its failure modes, arriving at the architecture that finally solves the problem.
+To understand why **Dense Arena Interning** is the right design, we need to trace the evolution from the first obvious approach through its failure modes, arriving at the architecture that finally solves the problem. We will in this case look at a problem in the lexer, determining if a identifier is a keyword or not, but the same pattern of evolution applies to many other problems in compiler design.
 
 ### Stage 1: Linear Scanning — O(N × L)
 
@@ -276,7 +276,7 @@ for (int i = 0; i < num_keywords; i++) {
 
 Two costs compound here. `strcmp` is O(L): to confirm a match, it must visit every character of both strings. And the loop is O(N): in the worst case (no match, or a match at the end), it checks every keyword. Combined cost: **O(N × L)** per token.
 
-With 15 keywords averaging 4 characters, you're doing up to 60 character-level operations to classify a single word. Multiply that by every identifier in every source file, in every compiler phase that needs to classify a name, and you have a performance anchor buried in the most frequently executed code path.
+With 15 keywords averaging 4 characters, you're doing up to 60 character-level operations to classify a single word. Multiply that by every identifier in every source file, and the cost balloons quickly.
 
 ### Stage 2: Hash Maps — O(L), but with Hidden Repetition
 
@@ -290,10 +290,9 @@ The cost per lookup drops to **O(L)**—dominated by the hash computation, which
 
 But there's a subtlety worth examining carefully. Consider what happens to the identifier `count` as it flows through the compiler:
 
-1. **Lexer**: hashes `count` → not a keyword, tagged as `TOK_IDENTIFIER`
-2. **Parser**: hashes `count` again → checks if it matches a declaration keyword pattern
-3. **Typechecker**: hashes `count` yet again → looks up its type in the symbol table
-4. **Optimizer**: hashes `count` repeatedly → checks uses during constant folding, dead code elimination, register allocation
+1. **Lexer**: hashes `count` → confirms it's not a keyword, tags as `TOK_IDENTIFIER`.
+2. **Typechecker**: hashes `count` again → looks up its type in a hash-based symbol table.
+3. **Optimizer**: hashes `count` repeatedly → checks uses during constant folding, dead code elimination, or register allocation.
 
 If `count` appears 200 times in the source, the compiler hashes those 5 characters **hundreds to thousands of times** across all phases. The O(L) cost is not paid once per unique string—it's paid every time any phase encounters any occurrence of it.
 
