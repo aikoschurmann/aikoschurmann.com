@@ -112,6 +112,13 @@
     width: 100%;
   }
 
+  @media (max-width: 600px) {
+    .chart-wrapper {
+      padding: 1rem;
+      margin: 1.5rem 0;
+    }
+  }
+
   .chart-title {
     font-family: var(--font-sans);
     font-size: 0.875rem;

@@ -16,7 +16,7 @@
       <h2 class="big-title">All <br><span>Projects</span></h2>
       <div class="project-grid">
         {#each projects as project}
-          <ProjectCard {project} />
+          <ProjectCard {project} openInNewTab={true} />
         {/each}
       </div>
     </section>

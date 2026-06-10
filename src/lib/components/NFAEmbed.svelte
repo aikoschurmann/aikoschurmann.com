@@ -406,7 +406,7 @@
 
 <div class="nfa-embed">
 	<div class="graph-wrap">
-		<svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} aria-label="NFA state graph" role="img">
+		<svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} width={svgWidth} height={svgHeight} aria-label="NFA state graph" role="img">
 			<defs>
 				<marker id="nfa-arrow" markerWidth="8" markerHeight="7" refX="7.4" refY="3.5" orient="auto" markerUnits="strokeWidth">
 					<path d="M0,0 L8,3.5 L0,7 L2.3,3.5 z" fill="rgba(255,255,255,0.72)" stroke="rgba(255,255,255,0.28)" stroke-width="0.55" />

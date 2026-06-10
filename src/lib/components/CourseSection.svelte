@@ -76,7 +76,7 @@
           aria-label={isCollapsed ? `Expand ${title}` : `Collapse ${title}`}
           onclick={handleToggle}
         >
-          <svg class="section-toggle-arrow" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+          <svg class="section-toggle-arrow" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">
             <path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
         </button>
