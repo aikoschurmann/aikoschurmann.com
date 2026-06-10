@@ -708,12 +708,6 @@
     font-weight: 600;
   }
 
-  .toc-link indents-h3 {
-    padding-left: 2rem;
-    font-size: 0.75rem;
-    opacity: 0.8;
-  }
-
   .toc-link:hover {
     color: var(--fg);
   }

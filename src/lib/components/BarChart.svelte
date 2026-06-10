@@ -50,6 +50,8 @@
         onmouseenter={() => hoveredBar = bar}
         onmouseleave={() => hoveredBar = null}
         class="bar"
+        role="img"
+        aria-label="{bar.label}: {bar.value}{ySuffix}"
       />
       
       <text x={x + barWidth/2} y={height - 20} class="axis-text label-text" text-anchor="middle">

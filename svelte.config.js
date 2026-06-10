@@ -5,7 +5,7 @@ import { createHighlighter } from 'shiki';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 
-let highlighter;
+let highlighterPromise;
 
 function rehypeEscapeSvelteSensitiveText() {
 	return (tree) => {
@@ -38,8 +38,8 @@ const mdsvexOptions = {
 	},
 	highlight: {
 		highlighter: async (code, lang = 'text') => {
-			if (!highlighter) {
-				highlighter = await createHighlighter({
+			if (!highlighterPromise) {
+				highlighterPromise = createHighlighter({
 					themes: ['nord'],
 					langs: [
 						'javascript',
@@ -50,10 +50,13 @@ const mdsvexOptions = {
 						'bash',
 						'json',
 						'rust',
-						'asm'
+						'asm',
+						'scala'
 					]
 				});
 			}
+
+			const highlighter = await highlighterPromise;
 
 			// Load language if not already loaded, handle potential unknown languages
 			try {
