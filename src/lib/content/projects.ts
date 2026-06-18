@@ -17,8 +17,8 @@ export const projectEntries: RawProject[] = [
     url: '/projects/compiler-v3',
     github: 'https://github.com/aikoschurmann/compiler-v3',
     thumb: 'C3',
-    description: 'A high-performance compiler for a strongly-typed procedural language, featuring recursive type checking and dense-ID symbol resolution.',
-    tags: ['C', 'INTERNING', 'TYPECHECKING'],
+    description: 'A compiler for a statically-typed, procedural language featuring explicit memory control and an LLVM backend.',
+    tags: ['C', 'LLVM', 'COMPILERS'],
     showOnHome: true,
     research: [
       { title: 'O(1) Symbol Resolution: The Power of String Interning', url: '/blog/string-interning-compilers' }
