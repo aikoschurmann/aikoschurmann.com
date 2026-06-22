@@ -183,7 +183,8 @@
     pointer-events: none;
     z-index: 10;
     box-sizing: border-box;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), background 0.5s, border-color 0.5s;
+    will-change: transform;
   }
   
   .blue-box {
@@ -195,12 +196,13 @@
   
   .domain-box {
     border: 3px solid;
-    top: 2px; width: 166px; height: 166px;
+    top: 2px; left: 2px; width: 166px; height: 166px;
+    will-change: transform;
   }
   
-  .db-x0 { left: 2px; border-color: #ef4444; background: rgba(239, 68, 68, 0.2); }
-  .db-x1 { left: 44px; border-color: #ef4444; background: rgba(239, 68, 68, 0.2); }
-  .db-x2 { left: 86px; border-color: #eab308; background: rgba(234, 179, 8, 0.2); }
+  .db-x0 { transform: translateX(0); border-color: #ef4444; background: rgba(239, 68, 68, 0.2); }
+  .db-x1 { transform: translateX(42px); border-color: #ef4444; background: rgba(239, 68, 68, 0.2); }
+  .db-x2 { transform: translateX(84px); border-color: #eab308; background: rgba(234, 179, 8, 0.2); }
   
   .workbench {
     display: flex;
@@ -258,10 +260,10 @@
     /* Scale down the 6x6 image grid to 30px cells */
     .grid-6x6 { grid-template-columns: repeat(6, 30px); grid-template-rows: repeat(6, 30px); }
     .blue-box { top: 130px; left: 130px; width: 62px; height: 62px; }
-    .domain-box { top: 2px; width: 126px; height: 126px; }
-    .db-x0 { left: 2px; }
-    .db-x1 { left: 34px; }
-    .db-x2 { left: 66px; }
+    .domain-box { top: 2px; left: 2px; width: 126px; height: 126px; }
+    .db-x0 { transform: translateX(0); }
+    .db-x1 { transform: translateX(32px); }
+    .db-x2 { transform: translateX(64px); }
     
     /* Keep Workbench Horizontal but scale down */
     .workbench { padding: 1rem; gap: 0.5rem; min-height: 120px; }

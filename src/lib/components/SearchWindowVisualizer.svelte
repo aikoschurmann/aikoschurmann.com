@@ -105,52 +105,65 @@
   
   .local-boundary.visible { opacity: 1; }
   
-  /* Domain Scanner is 4x4. width: 4*20 + 3*2 = 86px */
   .scanner {
     position: absolute;
+    top: 2px;
+    left: 2px;
     width: 86px; height: 86px;
     border: 2px solid #eab308;
     background: rgba(234, 179, 8, 0.3);
     z-index: 10;
     pointer-events: none;
+    will-change: transform;
   }
   
   .global-scan {
-    animation: globalScanAnim 4s linear infinite;
+    animation: globalScanAnim 4s infinite;
   }
   
   .local-scan {
-    animation: localScanAnim 2s linear infinite;
+    animation: localScanAnim 2s infinite;
   }
   
   /* Grid total size is 12x12. Cells are 22px apart.
      Max x for 4x4 box is 12 - 4 = 8.
      8 * 22 = 176px. Offset +2px = 178px */
   @keyframes globalScanAnim {
-    0%    { top: 2px; left: 2px; opacity: 1; }
-    18%   { top: 2px; left: 178px; opacity: 1; }
-    19%   { top: 2px; left: 178px; opacity: 0; }
-    20%   { top: 46px; left: 2px; opacity: 0; }
-    21%   { top: 46px; left: 2px; opacity: 1; }
+    /* Row 1 */
+    0%      { transform: translate(0, 0); opacity: 1; animation-timing-function: steps(8, end); }
+    10%     { transform: translate(176px, 0); opacity: 1; animation-timing-function: linear; }
+    16%     { transform: translate(176px, 0); opacity: 1; }
+    18%     { transform: translate(176px, 0); opacity: 0; }
+    19.9%   { transform: translate(0, 44px); opacity: 0; }
     
-    38%   { top: 46px; left: 178px; opacity: 1; }
-    39%   { top: 46px; left: 178px; opacity: 0; }
-    40%   { top: 90px; left: 2px; opacity: 0; }
-    41%   { top: 90px; left: 2px; opacity: 1; }
+    /* Row 2 */
+    20%     { transform: translate(0, 44px); opacity: 1; animation-timing-function: steps(8, end); }
+    30%     { transform: translate(176px, 44px); opacity: 1; animation-timing-function: linear; }
+    36%     { transform: translate(176px, 44px); opacity: 1; }
+    38%     { transform: translate(176px, 44px); opacity: 0; }
+    39.9%   { transform: translate(0, 88px); opacity: 0; }
     
-    58%   { top: 90px; left: 178px; opacity: 1; }
-    59%   { top: 90px; left: 178px; opacity: 0; }
-    60%   { top: 134px; left: 2px; opacity: 0; }
-    61%   { top: 134px; left: 2px; opacity: 1; }
+    /* Row 3 */
+    40%     { transform: translate(0, 88px); opacity: 1; animation-timing-function: steps(8, end); }
+    50%     { transform: translate(176px, 88px); opacity: 1; animation-timing-function: linear; }
+    56%     { transform: translate(176px, 88px); opacity: 1; }
+    58%     { transform: translate(176px, 88px); opacity: 0; }
+    59.9%   { transform: translate(0, 132px); opacity: 0; }
     
-    78%   { top: 134px; left: 178px; opacity: 1; }
-    79%   { top: 134px; left: 178px; opacity: 0; }
-    80%   { top: 178px; left: 2px; opacity: 0; }
-    81%   { top: 178px; left: 2px; opacity: 1; }
+    /* Row 4 */
+    60%     { transform: translate(0, 132px); opacity: 1; animation-timing-function: steps(8, end); }
+    70%     { transform: translate(176px, 132px); opacity: 1; animation-timing-function: linear; }
+    76%     { transform: translate(176px, 132px); opacity: 1; }
+    78%     { transform: translate(176px, 132px); opacity: 0; }
+    79.9%   { transform: translate(0, 176px); opacity: 0; }
     
-    98%   { top: 178px; left: 178px; opacity: 1; }
-    99%   { top: 178px; left: 178px; opacity: 0; }
-    100%  { top: 2px; left: 2px; opacity: 0; }
+    /* Row 5 */
+    80%     { transform: translate(0, 176px); opacity: 1; animation-timing-function: steps(8, end); }
+    90%     { transform: translate(176px, 176px); opacity: 1; animation-timing-function: linear; }
+    96%     { transform: translate(176px, 176px); opacity: 1; }
+    98%     { transform: translate(176px, 176px); opacity: 0; }
+    99.9%   { transform: translate(0, 0); opacity: 0; }
+    100%    { transform: translate(0, 0); opacity: 1; }
   }
   
   /* Local bound starts at x=3, ends at x=9.
@@ -158,19 +171,26 @@
      Max x = 5. Left offset: 2 + 5*22 = 112px.
      Start x = 3. Left offset: 2 + 3*22 = 68px. */
   @keyframes localScanAnim {
-    0%    { top: 68px; left: 68px; opacity: 1; }
-    31%   { top: 68px; left: 112px; opacity: 1; }
-    32%   { top: 68px; left: 112px; opacity: 0; }
-    33%   { top: 90px; left: 68px; opacity: 0; }
-    34%   { top: 90px; left: 68px; opacity: 1; }
+    /* Row 1 */
+    0%      { transform: translate(66px, 66px); opacity: 1; animation-timing-function: steps(2, end); }
+    15%     { transform: translate(110px, 66px); opacity: 1; animation-timing-function: linear; }
+    25%     { transform: translate(110px, 66px); opacity: 1; }
+    28%     { transform: translate(110px, 66px); opacity: 0; }
+    33.2%   { transform: translate(66px, 88px); opacity: 0; }
     
-    64%   { top: 90px; left: 112px; opacity: 1; }
-    65%   { top: 90px; left: 112px; opacity: 0; }
-    66%   { top: 112px; left: 68px; opacity: 0; }
-    67%   { top: 112px; left: 68px; opacity: 1; }
+    /* Row 2 */
+    33.33%  { transform: translate(66px, 88px); opacity: 1; animation-timing-function: steps(2, end); }
+    48.33%  { transform: translate(110px, 88px); opacity: 1; animation-timing-function: linear; }
+    58.33%  { transform: translate(110px, 88px); opacity: 1; }
+    61.33%  { transform: translate(110px, 88px); opacity: 0; }
+    66.5%   { transform: translate(66px, 110px); opacity: 0; }
     
-    97%   { top: 112px; left: 112px; opacity: 1; }
-    98%   { top: 112px; left: 112px; opacity: 0; }
-    100%  { top: 68px; left: 68px; opacity: 0; }
+    /* Row 3 */
+    66.66%  { transform: translate(66px, 110px); opacity: 1; animation-timing-function: steps(2, end); }
+    81.66%  { transform: translate(110px, 110px); opacity: 1; animation-timing-function: linear; }
+    91.66%  { transform: translate(110px, 110px); opacity: 1; }
+    94.66%  { transform: translate(110px, 110px); opacity: 0; }
+    99.9%   { transform: translate(66px, 66px); opacity: 0; }
+    100%    { transform: translate(66px, 66px); opacity: 1; }
   }
 </style>
