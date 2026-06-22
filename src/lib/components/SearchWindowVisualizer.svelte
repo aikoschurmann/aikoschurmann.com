@@ -127,15 +127,30 @@
      Max x for 4x4 box is 12 - 4 = 8.
      8 * 22 = 176px. Offset +2px = 178px */
   @keyframes globalScanAnim {
-    0%   { top: 2px; left: 2px; }
-    20%  { top: 2px; left: 178px; }
-    25%  { top: 46px; left: 2px; }
-    45%  { top: 46px; left: 178px; }
-    50%  { top: 90px; left: 2px; }
-    70%  { top: 90px; left: 178px; }
-    75%  { top: 134px; left: 2px; }
-    95%  { top: 134px; left: 178px; }
-    100% { top: 178px; left: 178px; }
+    0%    { top: 2px; left: 2px; opacity: 1; }
+    18%   { top: 2px; left: 178px; opacity: 1; }
+    19%   { top: 2px; left: 178px; opacity: 0; }
+    20%   { top: 46px; left: 2px; opacity: 0; }
+    21%   { top: 46px; left: 2px; opacity: 1; }
+    
+    38%   { top: 46px; left: 178px; opacity: 1; }
+    39%   { top: 46px; left: 178px; opacity: 0; }
+    40%   { top: 90px; left: 2px; opacity: 0; }
+    41%   { top: 90px; left: 2px; opacity: 1; }
+    
+    58%   { top: 90px; left: 178px; opacity: 1; }
+    59%   { top: 90px; left: 178px; opacity: 0; }
+    60%   { top: 134px; left: 2px; opacity: 0; }
+    61%   { top: 134px; left: 2px; opacity: 1; }
+    
+    78%   { top: 134px; left: 178px; opacity: 1; }
+    79%   { top: 134px; left: 178px; opacity: 0; }
+    80%   { top: 178px; left: 2px; opacity: 0; }
+    81%   { top: 178px; left: 2px; opacity: 1; }
+    
+    98%   { top: 178px; left: 178px; opacity: 1; }
+    99%   { top: 178px; left: 178px; opacity: 0; }
+    100%  { top: 2px; left: 2px; opacity: 0; }
   }
   
   /* Local bound starts at x=3, ends at x=9.
@@ -143,11 +158,19 @@
      Max x = 5. Left offset: 2 + 5*22 = 112px.
      Start x = 3. Left offset: 2 + 3*22 = 68px. */
   @keyframes localScanAnim {
-    0%   { top: 68px; left: 68px; }
-    30%  { top: 68px; left: 112px; }
-    40%  { top: 90px; left: 68px; }
-    70%  { top: 90px; left: 112px; }
-    80%  { top: 112px; left: 68px; }
-    100% { top: 112px; left: 112px; }
+    0%    { top: 68px; left: 68px; opacity: 1; }
+    31%   { top: 68px; left: 112px; opacity: 1; }
+    32%   { top: 68px; left: 112px; opacity: 0; }
+    33%   { top: 90px; left: 68px; opacity: 0; }
+    34%   { top: 90px; left: 68px; opacity: 1; }
+    
+    64%   { top: 90px; left: 112px; opacity: 1; }
+    65%   { top: 90px; left: 112px; opacity: 0; }
+    66%   { top: 112px; left: 68px; opacity: 0; }
+    67%   { top: 112px; left: 68px; opacity: 1; }
+    
+    97%   { top: 112px; left: 112px; opacity: 1; }
+    98%   { top: 112px; left: 112px; opacity: 0; }
+    100%  { top: 68px; left: 68px; opacity: 0; }
   }
 </style>
