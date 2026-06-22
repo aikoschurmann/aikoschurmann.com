@@ -12,6 +12,8 @@ export const tagColors: Record<string, TagStyle> = {
   INTERNING: { color: '#c084fc', bg: 'rgba(192, 132, 252, 0.1)' },
   TYPECHECKING: { color: '#c084fc', bg: 'rgba(192, 132, 252, 0.1)' },
   COMPILERS: { color: '#c084fc', bg: 'rgba(192, 132, 252, 0.1)' },
+  ALGORITHMS: { color: '#f472b6', bg: 'rgba(244, 114, 182, 0.1)' },
+  MATH: { color: '#22d3ee', bg: 'rgba(34, 211, 238, 0.1)' },
   AUTOMATA: { color: '#38bdf8', bg: 'rgba(56, 189, 248, 0.12)' },
   LEXING: { color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.12)' },
   PARSING: { color: '#a78bfa', bg: 'rgba(167, 139, 250, 0.12)' },
