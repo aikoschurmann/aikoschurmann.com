@@ -3,7 +3,7 @@ layout: project
 title: "fractal-compression"
 thumb: "FC"
 description: "A high-performance Partitioned Iterated Function System (PIFS) image compressor built from scratch."
-github: ""
+github: "https://github.com/aikoschurmann/fractal_compression"
 ---
 
 <script>

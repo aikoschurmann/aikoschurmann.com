@@ -5,7 +5,7 @@ export const projectEntries: RawProject[] = [
   {
     title: 'fractal-compression',
     url: '/projects/fractal-compression',
-    github: '',
+    github: 'https://github.com/aikoschurmann/fractal_compression',
     thumb: 'FC',
     description: 'A high-performance Partitioned Iterated Function System (PIFS) image compressor built from scratch.',
     tags: ['C', 'ALGORITHMS', 'MATH'],
