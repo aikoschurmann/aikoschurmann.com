@@ -3,6 +3,16 @@ import type { RawProject } from './types';
 // Edit this file to add or update portfolio projects.
 export const projectEntries: RawProject[] = [
   {
+    title: 'fractal-compression',
+    url: '/projects/fractal-compression',
+    github: '',
+    thumb: 'FC',
+    description: 'A high-performance Partitioned Iterated Function System (PIFS) image compressor built from scratch.',
+    tags: ['C', 'ALGORITHMS', 'MATH'],
+    showOnHome: true,
+    research: []
+  },
+  {
     title: 'software-renderer',
     url: '/projects/software-renderer',
     github: 'https://github.com/aikoschurmann/software-renderer',
