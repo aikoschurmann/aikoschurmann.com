@@ -119,9 +119,7 @@
         </div>
         
         <div class="math-operator">
-          {#if step < 6} &ne;
-          {:else} =
-          {/if}
+          {#if step < 6}&ne;{:else}={/if}
         </div>
       </div>
       
@@ -243,7 +241,7 @@
   .cell { display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 0.8rem; font-weight: bold; transition: all 0.5s ease; }
   .cell.sm { font-size: 0.85rem; }
   
-  .math-operator { font-size: 3rem; font-weight: bold; color: var(--fg-muted); width: 60px; text-align: center; flex-shrink: 0; }
+  .math-operator { font-size: 3rem; font-weight: bold; color: var(--fg-muted); width: 60px; text-align: center; flex-shrink: 0; transform: translateY(1.75rem); }
   
   @media (max-width: 600px) {
     .dr-visualizer { padding: 1rem; margin: 1.5rem 0; }
