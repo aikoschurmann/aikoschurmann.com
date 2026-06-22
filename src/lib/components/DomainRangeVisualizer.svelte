@@ -104,7 +104,7 @@
             {:else if step === 2} Rejected<br>(Downsampled)
             {:else if step === 3} Match<br>(Downsampled)
             {:else if step === 4} Domain &times; 0.5<br>&nbsp;
-            {:else} Domain &times; 0.5 + 70<br>&nbsp;
+            {:else} Domain &times; 0.5<br>+ 70
             {/if}
           </h4>
           
@@ -118,8 +118,11 @@
           </div>
         </div>
         
-        <div class="math-operator">
-          {#if step < 6}&ne;{:else}={/if}
+        <div class="math-operator-container">
+          <div class="spacer"></div>
+          <div class="math-operator">
+            {#if step < 6}&ne;{:else}={/if}
+          </div>
         </div>
       </div>
       
@@ -208,27 +211,29 @@
     padding: 2rem;
     border-radius: 8px;
     width: 100%;
+    overflow-x: auto;
   }
   
   /* The sliding wrapper that pushes the Target Range to the right */
   .domain-wrapper {
     display: flex;
+    flex-wrap: nowrap;
     align-items: center;
     gap: 2rem;
-    width: 0;
+    max-width: 0;
     opacity: 0;
     overflow: hidden;
     transition: all 0.5s ease;
+    flex-shrink: 0;
   }
   
   .domain-wrapper.visible {
-    /* panel (180px) + gap (32px) + operator (60px) = 272px */
-    width: 272px;
+    max-width: 400px;
     opacity: 1;
-    margin-right: 2rem; /* Add gap between operator and range panel */
+    margin-right: 2rem; 
   }
   
-  .panel { display: flex; flex-direction: column; align-items: center; width: 180px; flex-shrink: 0; }
+  .panel { display: flex; flex-direction: column; align-items: center; width: 180px; flex-shrink: 0; min-width: 0; }
   .panel h4 { margin: 0 0 1rem 0; color: var(--fg-muted); font-family: var(--font-mono); font-size: 0.85rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; text-align: center; }
   
   .grid { display: grid; gap: 2px; background: #333; padding: 2px; border-radius: 4px; }
@@ -241,7 +246,9 @@
   .cell { display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 0.8rem; font-weight: bold; transition: all 0.5s ease; }
   .cell.sm { font-size: 0.85rem; }
   
-  .math-operator { font-size: 3rem; font-weight: bold; color: var(--fg-muted); width: 60px; text-align: center; flex-shrink: 0; transform: translateY(1.75rem); }
+  .math-operator-container { display: flex; flex-direction: column; height: 100%; }
+  .spacer { height: 4rem; /* 3rem h4 + 1rem margin */ }
+  .math-operator { display: flex; align-items: center; justify-content: center; height: 132px; font-size: 3rem; font-weight: bold; color: var(--fg-muted); width: 60px; flex-shrink: 0; }
   
   @media (max-width: 600px) {
     .dr-visualizer { padding: 1rem; margin: 1.5rem 0; }
@@ -259,14 +266,15 @@
     /* Keep Workbench Horizontal but scale down */
     .workbench { padding: 1rem; gap: 0.5rem; min-height: 120px; }
     .domain-wrapper { gap: 0.5rem; }
-    /* panel(100) + gap(8) + operator(30) = 138px */
-    .domain-wrapper.visible { width: 138px; margin-right: 0.5rem; }
+    /* Let the max-width safely expand to the natural size */
+    .domain-wrapper.visible { max-width: 200px; margin-right: 0.5rem; }
     
     .panel { width: 100px; }
     .panel h4 { font-size: 0.75rem; height: 2rem; margin-bottom: 0.5rem; }
     .sg-2 { grid-template-columns: repeat(2, 40px); grid-template-rows: repeat(2, 40px); }
     
-    .math-operator { width: 30px; font-size: 2rem; }
+    .spacer { height: 2.5rem; }
+    .math-operator { width: 40px; height: 92px; font-size: 1.5rem; }
     .cell.sm { font-size: 0.75rem; }
     .header h3 { font-size: 1rem; }
   }
