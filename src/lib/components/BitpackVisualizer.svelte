@@ -77,9 +77,7 @@
       {#each bytes as _, i}
         {@const state = getState(i, step)}
         <div class="byte-wrapper {state ? 'visible' : 'hidden'}">
-          <div class="byte-slot {state ? state.t : ''}">
-            {state ? state.l : ''}
-          </div>
+          <div class="byte-slot {state ? state.t : ''}">{state ? state.l : ''}</div>
         </div>
       {/each}
     </div>
@@ -112,6 +110,7 @@
   .byte-grid {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     background: #222;
     padding: 1rem;
     padding-right: calc(1rem - 4px); /* offset margins */
@@ -120,9 +119,9 @@
     border: 2px solid #444;
     min-height: 120px;
     width: 100%;
-    max-width: 500px;
+    max-width: 488px;
     align-content: flex-start;
-    margin-bottom: 2rem;
+    margin: 0 auto 2rem auto;
   }
   
   .byte-wrapper {
