@@ -28,7 +28,7 @@ github: "https://github.com/aikoschurmann/fractal_compression"
 
 This document breaks down how I built a high-performance **Partitioned Iterated Function System (PIFS)** image compressor from scratch.
 
-Fractal compression is notorious for being computationally heavy $O(N^4)$. A naive implementation can literally take days to compress a single 1080p image. Below, I document the fundamental math of the algorithm, along with the aggressive heuristics and structural optimizations I implemented to get the compression time down to seconds.
+Fractal compression is notorious for being very computationally heavy $O(N^4)$. A naive implementation can literally take days to compress a single 1080p image. Below, I document the math of the algorithm, along with the heuristics and structural optimizations I implemented to get the compression time down to seconds.
 
 ---
 
