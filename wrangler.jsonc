@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "portfolio",
+  "name": "aikoschurmann",
   "compatibility_date": "2026-03-17",
   "compatibility_flags": [
     "nodejs_compat"
