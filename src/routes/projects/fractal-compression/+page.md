@@ -19,7 +19,7 @@ github: "https://github.com/aikoschurmann/fractal_compression"
 
 <ProjectLayout>
 
-> **The Result:** We successfully compressed a massive **4791x3529** raw image from **48.38MB** down to **207.35KB** using pure mathematical self-similarity. resulting in 0.1004 bits per pixel. That is a 239:1 compression ratio. PSNR = 39.39 dB & MSE = 4.37. Higher quality images can be achieved by tweaking compression parameters, jpg would have significantly worse quality at this file size.
+> **The Result:** We successfully compressed a massive **4791x3529** raw image from **48.38MB** down to **207.35KB** using pure mathematical self-similarity. resulting in 0.1004 bits per pixel. (A high quality JPG sits around 1.5 to 2 bpp) That is a 239:1 compression ratio. PSNR = 39.39 dB & MSE = 4.37. Higher quality images can be achieved by tweaking compression parameters, jpg would have significantly worse quality at this file size.
 
 <figure>
   <img src="/fractal_out.webp" alt="Fractal Image Compression Process" />
