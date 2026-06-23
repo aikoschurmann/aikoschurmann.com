@@ -19,7 +19,7 @@ github: "https://github.com/aikoschurmann/fractal_compression"
 
 <ProjectLayout>
 
-> **The Result:** We successfully compressed a massive **4791x3529** raw image from **48.38MB** down to a microscopic **561.50KB** using pure mathematical self-similarity.
+> **The Result:** We successfully compressed a massive **4791x3529** raw image from **48.38MB** down to **561.50KB** using pure mathematical self-similarity (without entropy reduction).
 
 <figure>
   <img src="/fractal_out.gif" alt="Fractal Image Compression Process" />
