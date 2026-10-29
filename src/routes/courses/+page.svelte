@@ -1,16 +1,13 @@
 <script lang="ts">
   import { courses } from '$lib/data';
   import { getTagData } from '$lib/data';
-  import ProfileSidebar from '$lib/components/ProfileSidebar.svelte';
 </script>
 
 <svelte:head>
   <title>Courses</title>
 </svelte:head>
 
-<div class="identity-grid reverse-mobile">
-  <ProfileSidebar />
-
+<div class="page-single">
   <div class="hero-content">
     <section id="courses">
       <h2 class="big-title">Learning <br><span>Courses</span></h2>

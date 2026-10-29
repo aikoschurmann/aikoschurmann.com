@@ -144,7 +144,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0.1rem 0.2rem;
+    padding: 0.1rem 0 0.1rem 0.2rem;
     border: none;
     background: transparent;
     cursor: pointer;

@@ -1,34 +1,18 @@
 <script lang="ts">
-  import { researchRoadmap } from '$lib/data';
-  import ProfileSidebar from '$lib/components/ProfileSidebar.svelte';
-
-  const roadmap = researchRoadmap;
+  import AcademicTimeline from '$lib/components/AcademicTimeline.svelte';
 </script>
 
 <svelte:head>
-  <title>{roadmap.title}</title>
+  <title>Academic Roadmap</title>
 </svelte:head>
 
-<div class="identity-grid reverse-mobile">
-  <ProfileSidebar />
-
+<div class="page-single">
   <div class="hero-content">
-    <section id="thoughts">
+    <section id="research">
       <h2 class="big-title">Academic <br><span>Roadmap</span></h2>
-      
-      {#if roadmap.component}
-        {@const Content = roadmap.component}
-        <div class="roadmap-md-content prose">
-          <Content />
-        </div>
-      {/if}
+      <p class="hero-desc">Degrees, theses and the formal research that came out of them.</p>
+
+      <AcademicTimeline />
     </section>
   </div>
 </div>
-
-<style>
-  .roadmap-md-content {
-    text-align: left;
-    margin-top: 4rem;
-  }
-</style>

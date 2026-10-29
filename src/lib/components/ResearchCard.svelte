@@ -129,7 +129,6 @@
     color: var(--fg-muted) !important;
     line-height: 1.6 !important;
     margin: 0.75rem 0 1.5rem 0 !important;
-    max-width: 600px !important;
     text-align: left !important;
   }
 
